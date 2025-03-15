@@ -81,6 +81,14 @@ export async function generatePortrait(description: string, styleId: string) {
 }
 
 export async function generateSoulImage(imagePrompt: string, style: ArtStyle): Promise<string> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY nie jest skonfigurowany');
+  }
+
+  const openai = new OpenAI({ apiKey });
+  
   const response = await openai.images.generate({
     model: "dall-e-3",
     prompt: `Create an artistic, abstract soul portrait that combines the essence of a human soul with their spirit animal. ${imagePrompt}. 
