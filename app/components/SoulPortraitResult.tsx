@@ -85,13 +85,148 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
             </div>
           </div>
 
-          <div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Interpretacja Kabalistyczna
+          <div className="bg-purple-50 p-6 rounded-lg">
+            <h3 className="text-2xl font-semibold text-purple-800 mb-4 text-center">
+              Portret Twojej Duszy
             </h3>
-            <p className="text-gray-600 whitespace-pre-wrap">
-              {portrait.analysis}
-            </p>
+            
+            <div className="space-y-6 text-purple-700">
+              {/* Cel Duszy */}
+              <div className="text-center mb-6">
+                <h4 className="text-xl font-medium mb-2">Cel Twojej Duszy</h4>
+                <p className="italic">{portrait.analysis.soulPurpose}</p>
+              </div>
+
+              {/* Drzewo Życia */}
+              <div className="bg-white/50 p-4 rounded-lg">
+                <h4 className="text-lg font-medium mb-3">Drzewo Życia - Sefira {portrait.analysis.treeOfLife.sefira}</h4>
+                <p className="mb-3">{portrait.analysis.treeOfLife.description}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h5 className="font-medium mb-2">Atrybuty</h5>
+                    <ul className="list-disc list-inside">
+                      {portrait.analysis.treeOfLife.attributes.map((attr, i) => (
+                        <li key={i}>{attr}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-medium mb-2">Wyzwania</h5>
+                    <ul className="list-disc list-inside">
+                      {portrait.analysis.treeOfLife.challenges.map((challenge, i) => (
+                        <li key={i}>{challenge}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Liczba Życia */}
+              <div className="bg-white/50 p-4 rounded-lg">
+                <h4 className="text-lg font-medium mb-3">Liczba Życia: {portrait.analysis.lifeNumber.number}</h4>
+                <p className="mb-3">{portrait.analysis.lifeNumber.meaning}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h5 className="font-medium mb-2">Mocne Strony</h5>
+                    <ul className="list-disc list-inside">
+                      {portrait.analysis.lifeNumber.strengths.map((strength, i) => (
+                        <li key={i}>{strength}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-medium mb-2">Obszary Rozwoju</h5>
+                    <ul className="list-disc list-inside">
+                      {portrait.analysis.lifeNumber.weaknesses.map((weakness, i) => (
+                        <li key={i}>{weakness}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ścieżka Pasji */}
+              <div className="bg-white/50 p-4 rounded-lg">
+                <h4 className="text-lg font-medium mb-3">Ścieżka Pasji: {portrait.analysis.passionPath.name}</h4>
+                <p className="mb-3">{portrait.analysis.passionPath.description}</p>
+                <div>
+                  <h5 className="font-medium mb-2">Dary Duchowe</h5>
+                  <ul className="list-disc list-inside">
+                    {portrait.analysis.passionPath.spiritualGifts.map((gift, i) => (
+                      <li key={i}>{gift}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-3">
+                  <h5 className="font-medium mb-2">Misja</h5>
+                  <p className="italic">{portrait.analysis.passionPath.mission}</p>
+                </div>
+              </div>
+
+              {/* Ścieżka Bólu */}
+              <div className="bg-white/50 p-4 rounded-lg">
+                <h4 className="text-lg font-medium mb-3">Ścieżka Bólu: {portrait.analysis.painPath.name}</h4>
+                <p className="mb-3">{portrait.analysis.painPath.description}</p>
+                <div>
+                  <h5 className="font-medium mb-2">Lekcje</h5>
+                  <ul className="list-disc list-inside">
+                    {portrait.analysis.painPath.lessons.map((lesson, i) => (
+                      <li key={i}>{lesson}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-3">
+                  <h5 className="font-medium mb-2">Uzdrawianie</h5>
+                  <p className="italic">{portrait.analysis.painPath.healing}</p>
+                </div>
+              </div>
+
+              {/* Dary Duchowe */}
+              <div className="bg-white/50 p-4 rounded-lg">
+                <h4 className="text-lg font-medium mb-3">Dary Duchowe</h4>
+                <ul className="list-disc list-inside">
+                  {portrait.analysis.spiritualGifts.map((gift, i) => (
+                    <li key={i}>{gift}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Lekcje Karmiczne */}
+              <div className="bg-white/50 p-4 rounded-lg">
+                <h4 className="text-lg font-medium mb-3">Lekcje Karmiczne</h4>
+                <ul className="list-disc list-inside">
+                  {portrait.analysis.karmicLessons.map((lesson, i) => (
+                    <li key={i}>{lesson}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Boska Ochrona */}
+              <div className="text-center mt-6">
+                <h4 className="text-lg font-medium mb-2">Boska Ochrona</h4>
+                <p className="italic">{portrait.analysis.divineProtection}</p>
+              </div>
+
+              {/* Zwierzę Duchowe */}
+              <div className="bg-white/50 p-4 rounded-lg mt-6">
+                <h4 className="text-lg font-medium mb-3 text-center">
+                  Twoje Zwierzę Duchowe: {portrait.analysis.spiritAnimal.name}
+                </h4>
+                <p className="mb-3 text-center italic">{portrait.analysis.spiritAnimal.description}</p>
+                <div>
+                  <h5 className="font-medium mb-2">Symbolika</h5>
+                  <ul className="list-disc list-inside">
+                    {portrait.analysis.spiritAnimal.symbolism.map((symbol, i) => (
+                      <li key={i}>{symbol}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-3">
+                  <h5 className="font-medium mb-2">Przewodnictwo</h5>
+                  <p className="italic">{portrait.analysis.spiritAnimal.guidance}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

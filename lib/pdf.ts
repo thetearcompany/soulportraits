@@ -42,7 +42,30 @@ export async function generatePortraitPDF(portrait: SavedPortrait, containerRef:
     pdf.setTextColor(55, 65, 81); // text-gray-700
     
     // Podziel tekst na linie
-    const splitAnalysis = pdf.splitTextToSize(portrait.analysis, pageWidth - 40);
+    const analysisText = `
+Cel Duszy:
+${portrait.analysis.soulPurpose}
+
+Drzewo Życia - Sefira ${portrait.analysis.treeOfLife.sefira}:
+${portrait.analysis.treeOfLife.description}
+
+Liczba Życia: ${portrait.analysis.lifeNumber.number}
+${portrait.analysis.lifeNumber.meaning}
+
+Ścieżka Pasji: ${portrait.analysis.passionPath.name}
+${portrait.analysis.passionPath.description}
+
+Ścieżka Bólu: ${portrait.analysis.painPath.name}
+${portrait.analysis.painPath.description}
+
+Zwierzę Duchowe: ${portrait.analysis.spiritAnimal.name}
+${portrait.analysis.spiritAnimal.description}
+
+Boska Ochrona:
+${portrait.analysis.divineProtection}
+    `.trim();
+
+    const splitAnalysis = pdf.splitTextToSize(analysisText, pageWidth - 40);
     pdf.text(splitAnalysis, 20, textY);
     
     // Dodaj datę

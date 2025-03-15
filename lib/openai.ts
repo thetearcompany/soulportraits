@@ -18,12 +18,59 @@ export async function generatePortrait(birthData: BirthData) {
     // Dodajemy wiadomość do wątku z danymi urodzenia
     await openai.beta.threads.messages.create(thread.id, {
       role: 'user',
-      content: `Proszę o analizę kabalistyczną i numerologiczną na podstawie następujących danych:
-        Imię: ${birthData.firstName}
-        Nazwisko: ${birthData.lastName}
-        Data urodzenia: ${birthData.birthDate}
-        Godzina urodzenia: ${birthData.birthTime}
-        Miejsce urodzenia: ${birthData.birthPlace}`
+      content: `Proszę o głęboką analizę kabalistyczną i numerologiczną, która ujawni prawdziwą esencję duszy. Odpowiedź powinna być w formacie JSON z następującymi sekcjami:
+
+{
+  "treeOfLife": {
+    "sefira": "nazwa sefiry",
+    "description": "szczegółowy opis pozycji na Drzewie Życia",
+    "attributes": ["lista atrybutów"],
+    "challenges": ["lista wyzwań"]
+  },
+  "lifeNumber": {
+    "number": liczba,
+    "meaning": "znaczenie liczby życia",
+    "strengths": ["lista mocnych stron"],
+    "weaknesses": ["lista obszarów do rozwoju"]
+  },
+  "passionPath": {
+    "name": "nazwa ścieżki",
+    "description": "opis ścieżki pasji",
+    "spiritualGifts": ["lista darów duchowych"],
+    "mission": "misja życiowa"
+  },
+  "painPath": {
+    "name": "nazwa ścieżki",
+    "description": "opis ścieżki bólu",
+    "lessons": ["lista lekcji"],
+    "healing": "proces uzdrawiania"
+  },
+  "soulPurpose": "główny cel duszy",
+  "spiritualGifts": ["lista darów duchowych"],
+  "karmicLessons": ["lista lekcji karmicznych"],
+  "divineProtection": "opis boskiej ochrony",
+  "spiritAnimal": {
+    "name": "nazwa zwierzęcia duchowego",
+    "description": "szczegółowy opis zwierzęcia i jego znaczenia",
+    "symbolism": ["lista symboli i znaczeń"],
+    "guidance": "przewodnictwo i wskazówki od zwierzęcia"
+  }
+}
+
+Dane do analizy:
+Imię: ${birthData.firstName}
+Nazwisko: ${birthData.lastName}
+Data urodzenia: ${birthData.birthDate}
+Godzina urodzenia: ${birthData.birthTime}
+Miejsce urodzenia: ${birthData.birthPlace}
+
+Proszę o interpretację, która:
+1. Ujawni głęboką mądrość kabalistyczną
+2. Pomoże zrozumieć duchową ścieżkę
+3. Wskaże potencjał i wyzwania
+4. Oferuje praktyczne wskazówki do rozwoju
+5. Ujawni boską ochronę i wsparcie
+6. Zidentyfikuje i opisze zwierzę duchowe, które towarzyszy tej duszy`
     });
 
     // Uruchamiamy asystenta
@@ -102,10 +149,19 @@ export async function generatePortrait(birthData: BirthData) {
 
     const analysis = content.text.value;
 
+    // Parsujemy odpowiedź asystenta na poszczególne sekcje
+    const sections = analysis.split('\n\n');
+    const kabalisticInterpretation = {
+      treeOfLife: sections[0] || 'Brak interpretacji Drzewa Życia',
+      lifeNumber: sections[1] || 'Brak interpretacji Liczby Życia',
+      passionPath: sections[2] || 'Brak interpretacji Ścieżki Pasji',
+      painPath: sections[3] || 'Brak interpretacji Ścieżki Bólu'
+    };
+
     // Generujemy obraz na podstawie analizy
     const imageResponse = await openai.images.generate({
       model: "dall-e-3",
-      prompt: `Stwórz  portret duszy odzwierciedlający wewnętrzną esencję osoby ale jego osobistego przyjaciela, zwierzęcia. Wykorzystaj subtelną symbolikę świętej geometrii, kolorów i świetlistych wzorów. ${analysis}`,
+      prompt: `Stwórz mistyczny portret duszy odzwierciedlający wewnętrzną esencję osoby. Wykorzystaj subtelną symbolikę świętej geometrii, kolorów i świetlistych wzorów. ${analysis}`,
       size: "1024x1024",
       quality: "standard",
       style: "vivid",
@@ -117,7 +173,7 @@ export async function generatePortrait(birthData: BirthData) {
     }
 
     return {
-      analysis,
+      analysis: kabalisticInterpretation,
       imageUrl,
       birthData,
       createdAt: new Date().toISOString(),

@@ -13,11 +13,48 @@ export interface NumerologicalData {
   birthPlace: string;
 }
 
+export interface KabalisticInterpretation {
+  treeOfLife: {
+    sefira: string;
+    description: string;
+    attributes: string[];
+    challenges: string[];
+  };
+  lifeNumber: {
+    number: number;
+    meaning: string;
+    strengths: string[];
+    weaknesses: string[];
+  };
+  passionPath: {
+    name: string;
+    description: string;
+    spiritualGifts: string[];
+    mission: string;
+  };
+  painPath: {
+    name: string;
+    description: string;
+    lessons: string[];
+    healing: string;
+  };
+  soulPurpose: string;
+  spiritualGifts: string[];
+  karmicLessons: string[];
+  divineProtection: string;
+  spiritAnimal: {
+    name: string;
+    description: string;
+    symbolism: string[];
+    guidance: string;
+  };
+}
+
 export interface SavedPortrait {
   id: string;
-  analysis: string;
   imageUrl: string;
   birthData: BirthData;
+  analysis: KabalisticInterpretation;
   createdAt: string;
 }
 

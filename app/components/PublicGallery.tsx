@@ -76,7 +76,7 @@ export const PublicGallery: React.FC<PublicGalleryProps> = ({ onSelect }) => {
                   {portrait.birthData.firstName} {portrait.birthData.lastName}
                 </h3>
                 <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                  {portrait.analysis}
+                  {portrait.analysis.soulPurpose}
                 </p>
                 <p className="text-xs text-gray-500 mt-2">
                   {new Date(portrait.createdAt).toLocaleDateString('pl-PL')}
