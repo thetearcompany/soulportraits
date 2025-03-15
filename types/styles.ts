@@ -7,21 +7,39 @@ export interface ArtStyle {
 
 export const artStyles: ArtStyle[] = [
   {
-    id: 'oil',
-    name: 'Obraz olejny',
-    prompt: 'oil painting style, rich textures, vibrant colors',
-    description: 'Klasyczny styl malarski z bogatymi teksturami i żywymi kolorami'
+    id: 'ethereal',
+    name: 'Eteryczny',
+    description: 'Delikatny, mistyczny styl z płynnymi formami i świetlistymi elementami',
+    prompt: 'ethereal, spiritual, flowing forms with luminous elements, soft light'
   },
   {
-    id: 'watercolor',
-    name: 'Akwarela',
-    prompt: 'watercolor style, soft edges, flowing colors',
-    description: 'Delikatny i płynny styl z przenikającymi się kolorami'
+    id: 'cosmic',
+    name: 'Kosmiczny',
+    description: 'Głęboka przestrzeń kosmiczna z galaktykami i mgławicami',
+    prompt: 'cosmic, deep space, galaxies, nebulae, star clusters, celestial energy'
   },
   {
-    id: 'digital',
-    name: 'Sztuka cyfrowa',
-    prompt: 'digital art style, modern, clean lines',
-    description: 'Nowoczesny styl cyfrowy z czystymi liniami'
+    id: 'nature',
+    name: 'Naturalny',
+    description: 'Inspirowany żywiołami natury i organicznymi formami',
+    prompt: 'organic forms, natural elements, flowing water, growing plants, earth tones'
+  },
+  {
+    id: 'geometric',
+    name: 'Geometryczny',
+    description: 'Abstrakcyjne formy geometryczne w harmonijnej kompozycji',
+    prompt: 'geometric abstract, sacred geometry, mathematical harmony, clean lines'
+  },
+  {
+    id: 'emotional',
+    name: 'Emocjonalny',
+    description: 'Ekspresyjny styl z intensywnymi kolorami i dynamicznymi pociągnięciami',
+    prompt: 'emotional expressionism, intense colors, dynamic brushstrokes, raw energy'
+  },
+  {
+    id: 'mystical',
+    name: 'Mistyczny',
+    description: 'Tajemniczy i duchowy styl z symbolicznymi elementami',
+    prompt: 'mystical, spiritual symbols, sacred art, divine light, ethereal atmosphere'
   }
 ]; 
