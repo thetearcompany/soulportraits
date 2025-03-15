@@ -18,7 +18,6 @@ const isPortraitUnique = (portrait: SavedPortrait, existingPortraits: SavedPortr
     existing.birthData.firstName === portrait.birthData.firstName &&
     existing.birthData.lastName === portrait.birthData.lastName &&
     existing.birthData.birthDate === portrait.birthData.birthDate &&
-    existing.birthData.birthTime === portrait.birthData.birthTime &&
     existing.birthData.birthPlace === portrait.birthData.birthPlace
   )
 }
