@@ -1,25 +1,24 @@
 import { NextResponse } from 'next/server';
-import { generateSoulPortrait, generateSoulImage } from '@/lib/openai';
-import { artStyles } from '@/types/styles';
+import { generatePortrait } from '@/lib/openai';
 
 export async function POST(request: Request) {
   try {
     const { description, style } = await request.json();
-    const selectedStyle = artStyles.find(s => s.id === style) || artStyles[0];
-    
-    const soulPortrait = await generateSoulPortrait(description);
-    const imageUrl = await generateSoulImage(soulPortrait.imagePrompt, selectedStyle);
 
-    return NextResponse.json({
-      description: soulPortrait.description,
-      imageUrl,
-      style: selectedStyle,
-      spiritAnimal: soulPortrait.spiritAnimal
-    });
+    if (!description || !style) {
+      return NextResponse.json(
+        { error: 'Brak wymaganych danych' },
+        { status: 400 }
+      );
+    }
+
+    const result = await generatePortrait(description, style);
+
+    return NextResponse.json(result);
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Błąd API:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Wystąpił błąd podczas generowania portretu' },
       { status: 500 }
     );
   }
