@@ -1,55 +1,90 @@
 'use client';
 
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { usePortraitHistory } from '@/lib/hooks/usePortraitHistory';
 import { PortraitHistory } from '@/app/components/PortraitHistory';
-import { PublicGallery } from '@/app/components/PublicGallery';
 import { SoulPortraitResult } from '@/app/components/SoulPortraitResult';
 import { SavedPortrait } from '@/types/portrait';
-import { artStyles } from '@/types/styles';
+import { birthDataSchema, type BirthData } from '@/lib/validations';
+import { ERROR_MESSAGES } from '@/lib/constants';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedStyle, setSelectedStyle] = useState(artStyles[0]);
-  const [description, setDescription] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [result, setResult] = useState<SavedPortrait | null>(null);
-  const [view, setView] = useState<'create' | 'history' | 'gallery'>('create');
+  const [view, setView] = useState<'create' | 'history'>('create');
   const { portraits, savePortrait, deletePortrait, clearHistory } = usePortraitHistory();
+  
+  const { register, handleSubmit: hookHandleSubmit, formState: { isValid, isDirty }, reset } = useForm<BirthData>({
+    mode: 'onChange',
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      birthDate: '',
+      birthTime: '',
+      birthPlace: ''
+    }
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!description.trim() || isLoading) return;
+  const onSubmit = async (formData: BirthData) => {
+    if (isLoading) return;
 
     setIsLoading(true);
+    setError(null);
+    setFieldErrors({});
+    
     try {
+      // Walidacja po stronie klienta
+      birthDataSchema.parse(formData);
+
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description, style: selectedStyle.id }),
+        body: JSON.stringify(formData),
       });
-
-      if (!response.ok) throw new Error('Błąd generowania portretu');
 
       const data = await response.json();
-      const savedPortrait = savePortrait({
-        description: data.description,
-        imageUrl: data.imageUrl,
-        style: data.style,
-        spiritAnimal: data.spiritAnimal
-      });
 
+      if (!response.ok) {
+        if (response.status === 429) {
+          setError(ERROR_MESSAGES.RATE_LIMIT);
+          return;
+        }
+        if (response.status === 400 && data.details) {
+          const errors: Record<string, string> = {};
+          data.details.forEach((err: { field: string; message: string }) => {
+            errors[err.field] = err.message;
+          });
+          setFieldErrors(errors);
+          setError(ERROR_MESSAGES.VALIDATION);
+          return;
+        }
+        setError(ERROR_MESSAGES.GENERIC);
+        return;
+      }
+
+      const savedPortrait = savePortrait(data);
       setResult(savedPortrait);
     } catch (error) {
-      console.error('Błąd:', error);
-      alert('Wystąpił błąd podczas generowania portretu. Spróbuj ponownie.');
+      console.error('Zakłócenie energii:', error);
+      if (error instanceof Error) {
+        const isKnownMessage = Object.values(ERROR_MESSAGES).includes(error.message);
+        setError(isKnownMessage ? error.message : ERROR_MESSAGES.UNEXPECTED);
+      } else {
+        setError(ERROR_MESSAGES.UNEXPECTED);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const resetForm = () => {
+    reset();
     setResult(null);
-    setDescription('');
+    setError(null);
+    setFieldErrors({});
   };
 
   return (
@@ -57,10 +92,10 @@ export default function Home() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-indigo-600 mb-4">
-            Portret Twojej Duszy
+            Twój Portret Duszy
           </h1>
           <p className="text-xl text-gray-600">
-            Odkryj głębię swojej duszy i poznaj swoje duchowe zwierzę
+            Odkryj swoją duchową esencję poprzez starożytną mądrość
           </p>
         </div>
 
@@ -73,7 +108,7 @@ export default function Home() {
                 : 'bg-white text-gray-600 hover:bg-gray-50'
             }`}
           >
-            Stwórz Nowy
+            Stwórz Portret
           </button>
           <button
             onClick={() => setView('history')}
@@ -85,84 +120,136 @@ export default function Home() {
           >
             Historia
           </button>
-          <button
-            onClick={() => setView('gallery')}
-            className={`px-4 py-2 rounded-lg ${
-              view === 'gallery'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            Galeria
-          </button>
         </div>
 
         {view === 'create' && !result && (
           <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="style" className="block text-sm font-medium text-gray-700 mb-2">
-                  Wybierz styl portretu
-                </label>
-                <select
-                  id="style"
-                  value={selectedStyle.id}
-                  onChange={(e) => setSelectedStyle(artStyles.find(s => s.id === e.target.value) || artStyles[0])}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                >
-                  {artStyles.map(style => (
-                    <option key={style.id} value={style.id}>
-                      {style.name} - {style.description}
-                    </option>
-                  ))}
-                </select>
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-800">{error}</p>
               </div>
-
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                  Opisz siebie lub osobę, której portret chcesz stworzyć
-                </label>
-                <textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={6}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Opisz charakter, zainteresowania, marzenia, emocje..."
-                  required
-                />
+            )}
+            
+            <form onSubmit={hookHandleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+                    Imię
+                  </label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    {...register('firstName', { required: true })}
+                    className={`w-full p-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 ${
+                      fieldErrors.firstName ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {fieldErrors.firstName && (
+                    <p className="mt-1 text-sm text-red-600">{fieldErrors.firstName}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+                    Nazwisko
+                  </label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    {...register('lastName', { required: true })}
+                    className={`w-full p-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 ${
+                      fieldErrors.lastName ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {fieldErrors.lastName && (
+                    <p className="mt-1 text-sm text-red-600">{fieldErrors.lastName}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700 mb-2">
+                    Data Urodzenia
+                  </label>
+                  <input
+                    type="date"
+                    id="birthDate"
+                    {...register('birthDate', { required: true })}
+                    className={`w-full p-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 ${
+                      fieldErrors.birthDate ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {fieldErrors.birthDate && (
+                    <p className="mt-1 text-sm text-red-600">{fieldErrors.birthDate}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="birthTime" className="block text-sm font-medium text-gray-700 mb-2">
+                    Czas Urodzenia
+                  </label>
+                  <input
+                    type="time"
+                    id="birthTime"
+                    {...register('birthTime', { required: true })}
+                    className={`w-full p-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 ${
+                      fieldErrors.birthTime ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {fieldErrors.birthTime && (
+                    <p className="mt-1 text-sm text-red-600">{fieldErrors.birthTime}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="birthPlace" className="block text-sm font-medium text-gray-700 mb-2">
+                    Miejsce Urodzenia
+                  </label>
+                  <input
+                    type="text"
+                    id="birthPlace"
+                    {...register('birthPlace', { required: true })}
+                    className={`w-full p-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 ${
+                      fieldErrors.birthPlace ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="np. Warszawa, Polska"
+                  />
+                  {fieldErrors.birthPlace && (
+                    <p className="mt-1 text-sm text-red-600">{fieldErrors.birthPlace}</p>
+                  )}
+                </div>
               </div>
-
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || !isValid || !isDirty}
                 className={`w-full py-3 px-6 rounded-lg text-white transition-colors duration-200 ${
-                  isLoading
+                  isLoading || !isValid || !isDirty
                     ? 'bg-indigo-400 cursor-not-allowed'
                     : 'bg-indigo-600 hover:bg-indigo-700'
                 }`}
               >
-                {isLoading ? 'Generowanie...' : 'Stwórz Portret Duszy'}
+                {isLoading ? 'Trwa proces tworzenia portretu...' : 'Stwórz Portret Duszy'}
               </button>
             </form>
           </div>
         )}
 
         {view === 'create' && result && (
-          <SoulPortraitResult portrait={result} onReset={resetForm} />
+          <div className="max-w-2xl mx-auto mt-8">
+            <SoulPortraitResult 
+              portrait={result} 
+              onReset={resetForm} 
+            />
+          </div>
         )}
 
         {view === 'history' && (
-          <PortraitHistory
-            portraits={portraits}
-            onDelete={deletePortrait}
-            onClearAll={clearHistory}
-            onSelect={setResult}
-          />
-        )}
-
-        {view === 'gallery' && (
-          <PublicGallery artStyles={artStyles} onSelect={setResult} />
+          <div className="max-w-7xl mx-auto">
+            <PortraitHistory
+              portraits={portraits}
+              onDelete={deletePortrait}
+              onClearAll={clearHistory}
+              onSelect={(portrait) => {
+                setResult(portrait);
+                setView('create');
+              }}
+            />
+          </div>
         )}
       </div>
     </main>

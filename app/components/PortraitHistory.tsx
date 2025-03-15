@@ -43,7 +43,7 @@ export const PortraitHistory: React.FC<PortraitHistoryProps> = ({
             <div className="relative aspect-square w-full">
               <Image
                 src={portrait.imageUrl}
-                alt={`Portret w stylu ${portrait.style.name}`}
+                alt={`Portret duszy i duchowego zwierzęcia`}
                 fill
                 className="object-cover cursor-pointer"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -53,7 +53,6 @@ export const PortraitHistory: React.FC<PortraitHistoryProps> = ({
             <div className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <div>
-                  <h3 className="font-semibold text-gray-800">{portrait.style.name}</h3>
                   <p className="text-sm text-gray-500">
                     {new Date(portrait.createdAt).toLocaleDateString('pl-PL')}
                   </p>
@@ -77,11 +76,11 @@ export const PortraitHistory: React.FC<PortraitHistoryProps> = ({
                 </button>
               </div>
               <div className="mt-2">
-                <p className="text-sm text-gray-600 line-clamp-2">{portrait.description}</p>
+                <p className="text-sm text-gray-600 line-clamp-2">{portrait.analysis}</p>
               </div>
               <div className="mt-2 p-2 bg-indigo-50 rounded">
                 <p className="text-sm text-indigo-800 font-medium">
-                  Duchowe Zwierzę: {portrait.spiritAnimal.name}
+                  {portrait.birthData.firstName} {portrait.birthData.lastName}
                 </p>
               </div>
             </div>

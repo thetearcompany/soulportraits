@@ -1,16 +1,23 @@
 import { ArtStyle } from './styles';
+import { BirthData } from '@/lib/validations';
 
 export interface SpiritAnimal {
   name: string;
   description: string;
 }
 
+export interface NumerologicalData {
+  name: string;
+  birthDate: string;
+  birthTime: string;
+  birthPlace: string;
+}
+
 export interface SavedPortrait {
   id: string;
-  description: string;
+  analysis: string;
   imageUrl: string;
-  style: ArtStyle;
-  spiritAnimal: SpiritAnimal;
+  birthData: BirthData;
   createdAt: string;
 }
 

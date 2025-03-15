@@ -1,20 +1,10 @@
 import { useRef } from 'react';
 import Image from 'next/image';
 import { generatePortraitPDF } from '@/lib/pdf';
+import { SavedPortrait } from '@/types/portrait';
 
 interface SoulPortraitResultProps {
-  portrait: {
-    description: string;
-    imageUrl: string;
-    style: {
-      name: string;
-    };
-    spiritAnimal: {
-      name: string;
-      description: string;
-    };
-    createdAt: string;
-  };
+  portrait: SavedPortrait;
   onReset: () => void;
 }
 
@@ -22,7 +12,7 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
   const contentRef = useRef<HTMLDivElement>(null);
 
   const handleShare = async (platform: 'facebook' | 'twitter' | 'linkedin') => {
-    const text = encodeURIComponent('Odkryj swój Portret Duszy i poznaj swoje duchowe zwierzę! 🎨✨🦋');
+    const text = encodeURIComponent('Odkryj swój Kabalistyczny Portret Duszy! 🔯✨');
     const url = encodeURIComponent(window.location.href);
     
     const shareUrls = {
@@ -63,38 +53,44 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg" ref={contentRef}>
+    <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-indigo-600 mb-4">Twój Portret Duszy</h1>
-        <p className="text-gray-600">Styl: {portrait.style.name}</p>
+        <h2 className="text-3xl font-bold text-indigo-600 mb-2">Twój Kabalistyczny Portret Duszy</h2>
+        <p className="text-gray-600">
+          {portrait.birthData.firstName} {portrait.birthData.lastName}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div className="relative aspect-square w-full">
           <Image
             src={portrait.imageUrl}
-            alt="Portret Duszy"
+            alt="Kabalistyczny Portret Duszy"
             fill
             className="rounded-lg shadow-lg object-cover"
             sizes="(max-width: 768px) 100vw, 50vw"
             priority
           />
         </div>
-        <div className="flex flex-col justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Opis Twojej Duszy</h2>
-            <p className="text-gray-600 whitespace-pre-wrap mb-6">{portrait.description}</p>
-            
-            <div className="bg-indigo-50 p-4 rounded-lg mb-4">
-              <h3 className="text-xl font-semibold text-indigo-800 mb-2">
-                Twoje Duchowe Zwierzę: {portrait.spiritAnimal.name}
-              </h3>
-              <p className="text-indigo-600">{portrait.spiritAnimal.description}</p>
+
+        <div className="space-y-6">
+          <div className="bg-indigo-50 p-4 rounded-lg">
+            <h3 className="text-xl font-semibold text-indigo-800 mb-2">
+              Dane Numerologiczne
+            </h3>
+            <div className="space-y-2 text-indigo-700">
+              <p>Data urodzenia: {new Date(portrait.birthData.birthDate).toLocaleDateString('pl-PL')}</p>
+              <p>Godzina urodzenia: {portrait.birthData.birthTime}</p>
+              <p>Miejsce urodzenia: {portrait.birthData.birthPlace}</p>
             </div>
           </div>
-          <div className="mt-6">
-            <p className="text-sm text-gray-500">
-              Wygenerowano: {new Date(portrait.createdAt).toLocaleDateString('pl-PL')}
+
+          <div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              Interpretacja Kabalistyczna
+            </h3>
+            <p className="text-gray-600 whitespace-pre-wrap">
+              {portrait.analysis}
             </p>
           </div>
         </div>
@@ -136,10 +132,10 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
           </button>
         </div>
       </div>
-      
+
       <button
         onClick={onReset}
-        className="mt-4 w-full py-2 px-4 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+        className="mt-6 w-full py-2 px-4 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors duration-200"
       >
         Stwórz nowy portret
       </button>

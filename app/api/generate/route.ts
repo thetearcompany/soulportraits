@@ -1,22 +1,33 @@
 import { NextResponse } from 'next/server';
 import { generatePortrait } from '@/lib/openai';
+import { birthDataSchema } from '@/lib/validations';
+import { ZodError } from 'zod';
 
 export async function POST(request: Request) {
   try {
-    const { description, style } = await request.json();
+    const body = await request.json();
+    
+    // Walidacja danych wejściowych
+    const validatedData = birthDataSchema.parse(body);
 
-    if (!description || !style) {
-      return NextResponse.json(
-        { error: 'Brak wymaganych danych' },
-        { status: 400 }
-      );
-    }
-
-    const result = await generatePortrait(description, style);
+    const result = await generatePortrait(validatedData);
 
     return NextResponse.json(result);
   } catch (error) {
     console.error('Błąd API:', error);
+
+    if (error instanceof ZodError) {
+      const errors = error.errors.map(err => ({
+        field: err.path.join('.'),
+        message: err.message
+      }));
+      
+      return NextResponse.json(
+        { error: 'Nieprawidłowe dane', details: errors },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas generowania portretu' },
       { status: 500 }

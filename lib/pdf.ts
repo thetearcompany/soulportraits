@@ -1,20 +1,8 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { SavedPortrait } from '@/types/portrait';
 
-interface Portrait {
-  description: string;
-  imageUrl: string;
-  style: {
-    name: string;
-  };
-  spiritAnimal: {
-    name: string;
-    description: string;
-  };
-  createdAt: string;
-}
-
-export async function generatePortraitPDF(portrait: Portrait, containerRef: HTMLElement) {
+export async function generatePortraitPDF(portrait: SavedPortrait, containerRef: HTMLElement) {
   // Utwórz nowy dokument PDF w formacie A4
   const pdf = new jsPDF('p', 'mm', 'a4');
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -25,10 +13,10 @@ export async function generatePortraitPDF(portrait: Portrait, containerRef: HTML
   pdf.setTextColor(75, 85, 99); // text-gray-600
   pdf.text('Portret Duszy', pageWidth / 2, 20, { align: 'center' });
   
-  // Dodaj styl
+  // Dodaj dane osoby
   pdf.setFontSize(12);
   pdf.setTextColor(79, 70, 229); // text-indigo-600
-  pdf.text(`Styl: ${portrait.style.name}`, pageWidth / 2, 30, { align: 'center' });
+  pdf.text(`${portrait.birthData.firstName} ${portrait.birthData.lastName}`, pageWidth / 2, 30, { align: 'center' });
 
   try {
     // Konwertuj kontener na canvas
@@ -48,26 +36,14 @@ export async function generatePortraitPDF(portrait: Portrait, containerRef: HTML
     // Dodaj obrazek
     pdf.addImage(imgData, 'JPEG', 20, 40, imgWidth, imgHeight);
     
-    // Dodaj opis
-    let textY = imgHeight + 60;
+    // Dodaj analizę
+    const textY = imgHeight + 60;
     pdf.setFontSize(12);
     pdf.setTextColor(55, 65, 81); // text-gray-700
     
     // Podziel tekst na linie
-    const splitDescription = pdf.splitTextToSize(portrait.description, pageWidth - 40);
-    pdf.text(splitDescription, 20, textY);
-    
-    // Dodaj informacje o duchowym zwierzęciu
-    textY += splitDescription.length * 7 + 10;
-    pdf.setFontSize(14);
-    pdf.setTextColor(79, 70, 229); // text-indigo-600
-    pdf.text(`Twoje Duchowe Zwierzę: ${portrait.spiritAnimal.name}`, 20, textY);
-    
-    textY += 7;
-    pdf.setFontSize(12);
-    pdf.setTextColor(55, 65, 81); // text-gray-700
-    const splitAnimalDesc = pdf.splitTextToSize(portrait.spiritAnimal.description, pageWidth - 40);
-    pdf.text(splitAnimalDesc, 20, textY);
+    const splitAnalysis = pdf.splitTextToSize(portrait.analysis, pageWidth - 40);
+    pdf.text(splitAnalysis, 20, textY);
     
     // Dodaj datę
     pdf.setFontSize(10);
