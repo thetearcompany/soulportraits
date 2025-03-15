@@ -76,13 +76,17 @@ export const PortraitHistory: React.FC<PortraitHistoryProps> = ({
                 </button>
               </div>
               <div className="mt-2">
-                <p className="text-sm text-gray-600 line-clamp-2">{portrait.analysis.soulPurpose}</p>
-              </div>
-              <div className="mt-2 p-2 bg-purple-50 rounded">
-                <p className="text-sm text-purple-800 font-medium">
-                  🦊 {portrait.analysis.spiritAnimal.name}
+                <p className="text-sm text-gray-600 line-clamp-2">
+                  {portrait.analysis.soulPurpose || 'Brak opisu celu duszy'}
                 </p>
               </div>
+              {portrait.analysis.spiritAnimal && (
+                <div className="mt-2 p-2 bg-purple-50 rounded">
+                  <p className="text-sm text-purple-800 font-medium">
+                    🦊 {portrait.analysis.spiritAnimal.name || 'Nie określono'}
+                  </p>
+                </div>
+              )}
               <div className="mt-2 p-2 bg-indigo-50 rounded">
                 <p className="text-sm text-indigo-800 font-medium">
                   {portrait.birthData.firstName} {portrait.birthData.lastName}

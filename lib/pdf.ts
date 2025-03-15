@@ -8,14 +8,22 @@ export async function generatePortraitPDF(portrait: SavedPortrait, containerRef:
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   
+  // Dodaj tło
+  pdf.setFillColor(88, 28, 135); // Głęboki fiolet
+  pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+  
+  // Dodaj gradient
+  pdf.setFillColor(139, 92, 246); // Jasny fiolet
+  pdf.rect(0, 0, pageWidth, 40, 'F');
+  
   // Dodaj nagłówek
   pdf.setFontSize(24);
-  pdf.setTextColor(75, 85, 99); // text-gray-600
+  pdf.setTextColor(255, 255, 255); // Biały
   pdf.text('Portret Duszy', pageWidth / 2, 20, { align: 'center' });
   
   // Dodaj dane osoby
   pdf.setFontSize(12);
-  pdf.setTextColor(79, 70, 229); // text-indigo-600
+  pdf.setTextColor(216, 180, 254); // Jasny fiolet
   pdf.text(`${portrait.birthData.firstName} ${portrait.birthData.lastName}`, pageWidth / 2, 30, { align: 'center' });
 
   try {
@@ -39,7 +47,7 @@ export async function generatePortraitPDF(portrait: SavedPortrait, containerRef:
     // Dodaj analizę
     const textY = imgHeight + 60;
     pdf.setFontSize(12);
-    pdf.setTextColor(55, 65, 81); // text-gray-700
+    pdf.setTextColor(216, 180, 254); // Jasny fiolet
     
     // Podziel tekst na linie
     const analysisText = `
@@ -70,7 +78,7 @@ ${portrait.analysis.divineProtection}
     
     // Dodaj datę
     pdf.setFontSize(10);
-    pdf.setTextColor(107, 114, 128); // text-gray-500
+    pdf.setTextColor(167, 139, 250); // Średni fiolet
     pdf.text(
       `Wygenerowano: ${new Date(portrait.createdAt).toLocaleDateString('pl-PL', {
         day: 'numeric',

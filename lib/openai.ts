@@ -149,19 +149,19 @@ Proszę o interpretację, która:
 
     const analysis = content.text.value;
 
-    // Parsujemy odpowiedź asystenta na poszczególne sekcje
-    const sections = analysis.split('\n\n');
-    const kabalisticInterpretation = {
-      treeOfLife: sections[0] || 'Brak interpretacji Drzewa Życia',
-      lifeNumber: sections[1] || 'Brak interpretacji Liczby Życia',
-      passionPath: sections[2] || 'Brak interpretacji Ścieżki Pasji',
-      painPath: sections[3] || 'Brak interpretacji Ścieżki Bólu'
-    };
+    // Parsujemy odpowiedź asystenta z formatu JSON
+    let kabalisticInterpretation;
+    try {
+      kabalisticInterpretation = JSON.parse(analysis);
+    } catch (error) {
+      console.error('Błąd parsowania JSON:', error);
+      throw new Error(ERROR_MESSAGES.UNEXPECTED);
+    }
 
     // Generujemy obraz na podstawie analizy
     const imageResponse = await openai.images.generate({
       model: "dall-e-3",
-      prompt: `Stwórz mistyczny portret duszy odzwierciedlający wewnętrzną esencję osoby. Wykorzystaj subtelną symbolikę świętej geometrii, kolorów i świetlistych wzorów. ${analysis}`,
+      prompt: `Create a mystical portrait inspired by Kabbalah and sacred geometry. The image should feature flowing light patterns, geometric shapes, and ethereal colors. Use deep purples, rich blues, and golden accents. The composition should be abstract and artistic, with a focus on spiritual symbolism. The overall mood should be mystical and contemplative.`,
       size: "1024x1024",
       quality: "standard",
       style: "vivid",

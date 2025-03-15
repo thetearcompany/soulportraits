@@ -1,7 +1,7 @@
-import { useRef } from 'react';
+import { useEffect } from 'react';
 import Image from 'next/image';
-import { generatePortraitPDF } from '@/lib/pdf';
 import { SavedPortrait } from '@/types/portrait';
+import { useStore } from '@/lib/store';
 
 interface SoulPortraitResultProps {
   portrait: SavedPortrait;
@@ -9,7 +9,11 @@ interface SoulPortraitResultProps {
 }
 
 export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait, onReset }) => {
-  const contentRef = useRef<HTMLDivElement>(null);
+  const { savePortrait } = useStore();
+
+  useEffect(() => {
+    savePortrait(portrait);
+  }, [portrait, savePortrait]);
 
   const handleShare = async (platform: 'facebook' | 'twitter' | 'linkedin') => {
     const text = encodeURIComponent('Odkryj swój Kabalistyczny Portret Duszy! 🔯✨');
@@ -43,6 +47,7 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
     }
   };
 
+  /*
   const handleExportPDF = async () => {
     if (!contentRef.current) return;
     try {
@@ -51,6 +56,7 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
       console.error('Błąd podczas generowania PDF:', error);
     }
   };
+  */
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
@@ -61,17 +67,19 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <div className="relative aspect-square w-full">
-          <Image
-            src={portrait.imageUrl}
-            alt="Kabalistyczny Portret Duszy"
-            fill
-            className="rounded-lg shadow-lg object-cover"
-            sizes="(max-width: 768px) 100vw, 50vw"
-            priority
-          />
-        </div>
+      <div className="flex flex-col gap-4">
+        {portrait.imageUrl && (
+          <div className="relative aspect-square w-full">
+            <Image
+              src={portrait.imageUrl}
+              alt="Kabalistyczny Portret Duszy"
+              fill
+              className="rounded-lg shadow-lg object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
+            />
+          </div>
+        )}
 
         <div className="space-y-6">
           <div className="bg-indigo-50 p-4 rounded-lg">
@@ -99,23 +107,23 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
 
               {/* Drzewo Życia */}
               <div className="bg-white/50 p-4 rounded-lg">
-                <h4 className="text-lg font-medium mb-3">Drzewo Życia - Sefira {portrait.analysis.treeOfLife.sefira}</h4>
-                <p className="mb-3">{portrait.analysis.treeOfLife.description}</p>
+                <h4 className="text-lg font-medium mb-3">Drzewo Życia - Sefira {portrait.analysis.treeOfLife?.sefira}</h4>
+                <p className="mb-3">{portrait.analysis.treeOfLife?.description}</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h5 className="font-medium mb-2">Atrybuty</h5>
                     <ul className="list-disc list-inside">
-                      {portrait.analysis.treeOfLife.attributes.map((attr, i) => (
+                      {portrait.analysis.treeOfLife?.attributes?.map((attr, i) => (
                         <li key={i}>{attr}</li>
-                      ))}
+                      )) || <li>Brak atrybutów</li>}
                     </ul>
                   </div>
                   <div>
                     <h5 className="font-medium mb-2">Wyzwania</h5>
                     <ul className="list-disc list-inside">
-                      {portrait.analysis.treeOfLife.challenges.map((challenge, i) => (
+                      {portrait.analysis.treeOfLife?.challenges?.map((challenge, i) => (
                         <li key={i}>{challenge}</li>
-                      ))}
+                      )) || <li>Brak wyzwań</li>}
                     </ul>
                   </div>
                 </div>
@@ -123,23 +131,23 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
 
               {/* Liczba Życia */}
               <div className="bg-white/50 p-4 rounded-lg">
-                <h4 className="text-lg font-medium mb-3">Liczba Życia: {portrait.analysis.lifeNumber.number}</h4>
-                <p className="mb-3">{portrait.analysis.lifeNumber.meaning}</p>
+                <h4 className="text-lg font-medium mb-3">Liczba Życia: {portrait.analysis.lifeNumber?.number}</h4>
+                <p className="mb-3">{portrait.analysis.lifeNumber?.meaning}</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h5 className="font-medium mb-2">Mocne Strony</h5>
                     <ul className="list-disc list-inside">
-                      {portrait.analysis.lifeNumber.strengths.map((strength, i) => (
+                      {portrait.analysis.lifeNumber?.strengths?.map((strength, i) => (
                         <li key={i}>{strength}</li>
-                      ))}
+                      )) || <li>Brak mocnych stron</li>}
                     </ul>
                   </div>
                   <div>
                     <h5 className="font-medium mb-2">Obszary Rozwoju</h5>
                     <ul className="list-disc list-inside">
-                      {portrait.analysis.lifeNumber.weaknesses.map((weakness, i) => (
+                      {portrait.analysis.lifeNumber?.weaknesses?.map((weakness, i) => (
                         <li key={i}>{weakness}</li>
-                      ))}
+                      )) || <li>Brak obszarów rozwoju</li>}
                     </ul>
                   </div>
                 </div>
@@ -147,37 +155,37 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
 
               {/* Ścieżka Pasji */}
               <div className="bg-white/50 p-4 rounded-lg">
-                <h4 className="text-lg font-medium mb-3">Ścieżka Pasji: {portrait.analysis.passionPath.name}</h4>
-                <p className="mb-3">{portrait.analysis.passionPath.description}</p>
+                <h4 className="text-lg font-medium mb-3">Ścieżka Pasji: {portrait.analysis.passionPath?.name}</h4>
+                <p className="mb-3">{portrait.analysis.passionPath?.description}</p>
                 <div>
                   <h5 className="font-medium mb-2">Dary Duchowe</h5>
                   <ul className="list-disc list-inside">
-                    {portrait.analysis.passionPath.spiritualGifts.map((gift, i) => (
+                    {portrait.analysis.passionPath?.spiritualGifts?.map((gift, i) => (
                       <li key={i}>{gift}</li>
-                    ))}
+                    )) || <li>Brak darów duchowych</li>}
                   </ul>
                 </div>
                 <div className="mt-3">
                   <h5 className="font-medium mb-2">Misja</h5>
-                  <p className="italic">{portrait.analysis.passionPath.mission}</p>
+                  <p className="italic">{portrait.analysis.passionPath?.mission}</p>
                 </div>
               </div>
 
               {/* Ścieżka Bólu */}
               <div className="bg-white/50 p-4 rounded-lg">
-                <h4 className="text-lg font-medium mb-3">Ścieżka Bólu: {portrait.analysis.painPath.name}</h4>
-                <p className="mb-3">{portrait.analysis.painPath.description}</p>
+                <h4 className="text-lg font-medium mb-3">Ścieżka Bólu: {portrait.analysis.painPath?.name}</h4>
+                <p className="mb-3">{portrait.analysis.painPath?.description}</p>
                 <div>
                   <h5 className="font-medium mb-2">Lekcje</h5>
                   <ul className="list-disc list-inside">
-                    {portrait.analysis.painPath.lessons.map((lesson, i) => (
+                    {portrait.analysis.painPath?.lessons?.map((lesson, i) => (
                       <li key={i}>{lesson}</li>
-                    ))}
+                    )) || <li>Brak lekcji</li>}
                   </ul>
                 </div>
                 <div className="mt-3">
                   <h5 className="font-medium mb-2">Uzdrawianie</h5>
-                  <p className="italic">{portrait.analysis.painPath.healing}</p>
+                  <p className="italic">{portrait.analysis.painPath?.healing}</p>
                 </div>
               </div>
 
@@ -185,9 +193,9 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
               <div className="bg-white/50 p-4 rounded-lg">
                 <h4 className="text-lg font-medium mb-3">Dary Duchowe</h4>
                 <ul className="list-disc list-inside">
-                  {portrait.analysis.spiritualGifts.map((gift, i) => (
+                  {portrait.analysis.spiritualGifts?.map((gift, i) => (
                     <li key={i}>{gift}</li>
-                  ))}
+                  )) || <li>Brak darów duchowych</li>}
                 </ul>
               </div>
 
@@ -195,9 +203,9 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
               <div className="bg-white/50 p-4 rounded-lg">
                 <h4 className="text-lg font-medium mb-3">Lekcje Karmiczne</h4>
                 <ul className="list-disc list-inside">
-                  {portrait.analysis.karmicLessons.map((lesson, i) => (
+                  {portrait.analysis.karmicLessons?.map((lesson, i) => (
                     <li key={i}>{lesson}</li>
-                  ))}
+                  )) || <li>Brak lekcji karmicznych</li>}
                 </ul>
               </div>
 
@@ -208,24 +216,32 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
               </div>
 
               {/* Zwierzę Duchowe */}
-              <div className="bg-white/50 p-4 rounded-lg mt-6">
-                <h4 className="text-lg font-medium mb-3 text-center">
-                  Twoje Zwierzę Duchowe: {portrait.analysis.spiritAnimal.name}
-                </h4>
-                <p className="mb-3 text-center italic">{portrait.analysis.spiritAnimal.description}</p>
-                <div>
-                  <h5 className="font-medium mb-2">Symbolika</h5>
-                  <ul className="list-disc list-inside">
-                    {portrait.analysis.spiritAnimal.symbolism.map((symbol, i) => (
-                      <li key={i}>{symbol}</li>
-                    ))}
-                  </ul>
+              {portrait.analysis.spiritAnimal && (
+                <div className="bg-white/50 p-4 rounded-lg mt-6">
+                  <h4 className="text-lg font-medium mb-3 text-center">
+                    Twoje Zwierzę Duchowe: {portrait.analysis.spiritAnimal.name || 'Nie określono'}
+                  </h4>
+                  {portrait.analysis.spiritAnimal.description && (
+                    <p className="mb-3 text-center italic">{portrait.analysis.spiritAnimal.description}</p>
+                  )}
+                  {portrait.analysis.spiritAnimal.symbolism && portrait.analysis.spiritAnimal.symbolism.length > 0 && (
+                    <div>
+                      <h5 className="font-medium mb-2">Symbolika</h5>
+                      <ul className="list-disc list-inside">
+                        {portrait.analysis.spiritAnimal.symbolism.map((symbol, i) => (
+                          <li key={i}>{symbol}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {portrait.analysis.spiritAnimal.guidance && (
+                    <div className="mt-3">
+                      <h5 className="font-medium mb-2">Przewodnictwo</h5>
+                      <p className="italic">{portrait.analysis.spiritAnimal.guidance}</p>
+                    </div>
+                  )}
                 </div>
-                <div className="mt-3">
-                  <h5 className="font-medium mb-2">Przewodnictwo</h5>
-                  <p className="italic">{portrait.analysis.spiritAnimal.guidance}</p>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -233,18 +249,20 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={handleDownload}
-            className="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
-          >
-            Pobierz Obraz
-          </button>
-          <button
+          {portrait.imageUrl && (
+            <button
+              onClick={handleDownload}
+              className="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+            >
+              Pobierz Obraz
+            </button>
+          )}
+          {/* <button
             onClick={handleExportPDF}
             className="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
           >
             Eksportuj PDF
-          </button>
+          </button> */}
         </div>
         <div className="grid grid-cols-3 gap-2">
           <button
