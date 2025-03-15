@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import Image from 'next/image';
 import { generatePortraitPDF } from '@/lib/pdf';
 
 interface SoulPortraitResultProps {
@@ -69,11 +70,14 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <div>
-          <img
+        <div className="relative aspect-square w-full">
+          <Image
             src={portrait.imageUrl}
             alt="Portret Duszy"
-            className="w-full rounded-lg shadow-lg"
+            fill
+            className="rounded-lg shadow-lg object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
           />
         </div>
         <div className="flex flex-col justify-between">
@@ -96,26 +100,49 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <button
-          onClick={handleDownload}
-          className="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
-        >
-          Pobierz Obraz
-        </button>
-        <button
-          onClick={handleExportPDF}
-          className="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
-        >
-          Eksportuj do PDF
-        </button>
-        <button
-          onClick={() => window.print()}
-          className="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
-        >
-          Drukuj
-        </button>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={handleDownload}
+            className="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+          >
+            Pobierz Obraz
+          </button>
+          <button
+            onClick={handleExportPDF}
+            className="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+          >
+            Eksportuj PDF
+          </button>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={() => handleShare('facebook')}
+            className="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+          >
+            Facebook
+          </button>
+          <button
+            onClick={() => handleShare('twitter')}
+            className="py-2 px-4 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors duration-200"
+          >
+            Twitter
+          </button>
+          <button
+            onClick={() => handleShare('linkedin')}
+            className="py-2 px-4 bg-blue-800 text-white rounded-lg hover:bg-blue-900 transition-colors duration-200"
+          >
+            LinkedIn
+          </button>
+        </div>
       </div>
+      
+      <button
+        onClick={onReset}
+        className="mt-4 w-full py-2 px-4 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+      >
+        Stwórz nowy portret
+      </button>
     </div>
   );
 }; 

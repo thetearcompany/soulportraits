@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { SavedPortrait } from '@/types/portrait';
 
 interface PortraitHistoryProps {
@@ -15,19 +16,19 @@ export const PortraitHistory: React.FC<PortraitHistoryProps> = ({
 }) => {
   if (portraits.length === 0) {
     return (
-      <div className="text-center text-gray-500 py-8">
-        <p>Twoja historia portretów jest pusta.</p>
+      <div className="text-center p-8">
+        <p className="text-gray-500">Twoja historia portretów jest pusta.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Historia Portretów</h2>
         <button
           onClick={onClearAll}
-          className="text-red-600 hover:text-red-700 transition-colors duration-200"
+          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
         >
           Wyczyść historię
         </button>
@@ -39,36 +40,50 @@ export const PortraitHistory: React.FC<PortraitHistoryProps> = ({
             key={portrait.id}
             className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200"
           >
-            <img
-              src={portrait.imageUrl}
-              alt="Portret Duszy"
-              className="w-full h-48 object-cover cursor-pointer"
-              onClick={() => onSelect(portrait)}
-            />
+            <div className="relative aspect-square w-full">
+              <Image
+                src={portrait.imageUrl}
+                alt={`Portret w stylu ${portrait.style.name}`}
+                fill
+                className="object-cover cursor-pointer"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                onClick={() => onSelect(portrait)}
+              />
+            </div>
             <div className="p-4">
               <div className="flex justify-between items-start mb-2">
-                <span className="inline-block px-2 py-1 bg-indigo-100 text-indigo-800 text-sm rounded-full">
-                  {portrait.style.name}
-                </span>
+                <div>
+                  <h3 className="font-semibold text-gray-800">{portrait.style.name}</h3>
+                  <p className="text-sm text-gray-500">
+                    {new Date(portrait.createdAt).toLocaleDateString('pl-PL')}
+                  </p>
+                </div>
                 <button
                   onClick={() => onDelete(portrait.id)}
-                  className="text-red-500 hover:text-red-600"
-                  aria-label="Usuń portret"
+                  className="text-red-600 hover:text-red-700"
                 >
-                  ✕
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                 </button>
               </div>
-              <p className="text-gray-600 text-sm line-clamp-2 mb-2">
-                {portrait.description}
-              </p>
-              <div className="bg-indigo-50 p-2 rounded mb-2">
-                <p className="text-indigo-800 text-sm font-medium">
-                  Duchowe zwierzę: {portrait.spiritAnimal.name}
+              <div className="mt-2">
+                <p className="text-sm text-gray-600 line-clamp-2">{portrait.description}</p>
+              </div>
+              <div className="mt-2 p-2 bg-indigo-50 rounded">
+                <p className="text-sm text-indigo-800 font-medium">
+                  Duchowe Zwierzę: {portrait.spiritAnimal.name}
                 </p>
               </div>
-              <p className="text-gray-500 text-xs">
-                {new Date(portrait.createdAt).toLocaleDateString('pl-PL')}
-              </p>
             </div>
           </div>
         ))}

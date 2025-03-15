@@ -162,7 +162,7 @@ export default function Home() {
         )}
 
         {view === 'gallery' && (
-          <PublicGallery onSelect={setResult} />
+          <PublicGallery artStyles={artStyles} onSelect={setResult} />
         )}
       </div>
     </main>

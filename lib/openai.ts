@@ -47,7 +47,12 @@ export async function generateSoulPortrait(userDescription: string): Promise<Sou
     if (line.startsWith('OPIS ZWIERZĘCIA:')) acc.animalDescription = line.replace('OPIS ZWIERZĘCIA:', '').trim();
     if (line.startsWith('PROMPT:')) acc.imagePrompt = line.replace('PROMPT:', '').trim();
     return acc;
-  }, {} as any);
+  }, {
+    description: '',
+    animalName: '',
+    animalDescription: '',
+    imagePrompt: ''
+  });
 
   return {
     description: sections.description,
