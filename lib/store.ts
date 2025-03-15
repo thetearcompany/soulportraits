@@ -13,6 +13,16 @@ interface Store {
 
 const db = new PortraitDatabase()
 
+const isPortraitUnique = (portrait: SavedPortrait, existingPortraits: SavedPortrait[]): boolean => {
+  return !existingPortraits.some(existing => 
+    existing.birthData.firstName === portrait.birthData.firstName &&
+    existing.birthData.lastName === portrait.birthData.lastName &&
+    existing.birthData.birthDate === portrait.birthData.birthDate &&
+    existing.birthData.birthTime === portrait.birthData.birthTime &&
+    existing.birthData.birthPlace === portrait.birthData.birthPlace
+  )
+}
+
 const validatePortrait = (portrait: SavedPortrait): SavedPortrait => {
   return {
     ...portrait,
@@ -42,9 +52,15 @@ export const useStore = create<Store>((set) => ({
   setPortrait: (portrait) => set({ portrait: portrait ? validatePortrait(portrait) : null }),
   savePortrait: async (portrait) => {
     const validatedPortrait = validatePortrait(portrait)
-    await db.portraits.add(validatedPortrait)
-    const portraits = await db.portraits.toArray()
-    set({ portraits: portraits.map(validatePortrait) })
+    const existingPortraits = await db.portraits.toArray()
+    
+    if (isPortraitUnique(validatedPortrait, existingPortraits)) {
+      await db.portraits.add(validatedPortrait)
+      const portraits = await db.portraits.toArray()
+      set({ portraits: portraits.map(validatePortrait) })
+    } else {
+      console.log('Portret już istnieje w bazie danych')
+    }
   },
   loadPortraits: async () => {
     const portraits = await db.portraits.toArray()
