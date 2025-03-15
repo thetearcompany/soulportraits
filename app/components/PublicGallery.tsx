@@ -64,7 +64,7 @@ export const PublicGallery: React.FC<PublicGalleryProps> = ({ onSelect }) => {
             >
               <div className="relative aspect-square w-full">
                 <Image
-                  src={portrait.imageUrl}
+                  src={portrait.imageUrl || 'https://api.dicebear.com/7.x/3d-avatars/svg?seed=' + portrait.id}
                   alt={`Portret duszy dla ${portrait.birthData.firstName} ${portrait.birthData.lastName}`}
                   fill
                   className="object-cover"

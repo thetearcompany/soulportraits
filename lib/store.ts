@@ -34,11 +34,15 @@ const validatePortrait = (portrait: SavedPortrait): SavedPortrait => {
         symbolism: portrait.analysis.spiritAnimal?.symbolism || [],
         guidance: portrait.analysis.spiritAnimal?.guidance || ''
       },
+      guardianAngel: {
+        name: portrait.analysis.guardianAngel?.name || 'Nie określono',
+        description: portrait.analysis.guardianAngel?.description || ''
+      },
       soulPurpose: portrait.analysis.soulPurpose || 'Brak opisu celu duszy',
-      treeOfLife: portrait.analysis.treeOfLife || null,
-      lifeNumber: portrait.analysis.lifeNumber || null,
-      passionPath: portrait.analysis.passionPath || null,
-      painPath: portrait.analysis.painPath || null,
+      treeOfLife: portrait.analysis.treeOfLife || undefined,
+      lifeNumber: portrait.analysis.lifeNumber || undefined,
+      passionPath: portrait.analysis.passionPath || undefined,
+      painPath: portrait.analysis.painPath || undefined,
       spiritualGifts: portrait.analysis.spiritualGifts || [],
       karmicLessons: portrait.analysis.karmicLessons || [],
       divineProtection: portrait.analysis.divineProtection || ''

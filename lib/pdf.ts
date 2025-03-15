@@ -3,6 +3,10 @@ import html2canvas from 'html2canvas';
 import { SavedPortrait } from '@/types/portrait';
 
 export async function generatePortraitPDF(portrait: SavedPortrait, containerRef: HTMLElement) {
+  if (!portrait || !containerRef) {
+    throw new Error('Brak wymaganych danych do generowania PDF');
+  }
+
   // Utwórz nowy dokument PDF w formacie A4
   const pdf = new jsPDF('p', 'mm', 'a4');
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -24,7 +28,8 @@ export async function generatePortraitPDF(portrait: SavedPortrait, containerRef:
   // Dodaj dane osoby
   pdf.setFontSize(12);
   pdf.setTextColor(216, 180, 254); // Jasny fiolet
-  pdf.text(`${portrait.birthData.firstName} ${portrait.birthData.lastName}`, pageWidth / 2, 30, { align: 'center' });
+  const fullName = `${portrait.birthData?.firstName || ''} ${portrait.birthData?.lastName || ''}`.trim();
+  pdf.text(fullName, pageWidth / 2, 30, { align: 'center' });
 
   try {
     // Konwertuj kontener na canvas
@@ -52,25 +57,28 @@ export async function generatePortraitPDF(portrait: SavedPortrait, containerRef:
     // Podziel tekst na linie
     const analysisText = `
 Cel Duszy:
-${portrait.analysis.soulPurpose}
+${portrait.analysis?.soulPurpose || 'Brak opisu celu duszy'}
 
-Drzewo Życia - Sefira ${portrait.analysis.treeOfLife.sefira}:
-${portrait.analysis.treeOfLife.description}
+${portrait.analysis?.treeOfLife ? `Drzewo Życia - Sefira ${portrait.analysis.treeOfLife.sefira || 'Nie określono'}:
+${portrait.analysis.treeOfLife.description || 'Brak opisu'}` : ''}
 
-Liczba Życia: ${portrait.analysis.lifeNumber.number}
-${portrait.analysis.lifeNumber.meaning}
+${portrait.analysis?.lifeNumber ? `Liczba Życia: ${portrait.analysis.lifeNumber.number || 'Nie określono'}
+${portrait.analysis.lifeNumber.meaning || 'Brak opisu'}` : ''}
 
-Ścieżka Pasji: ${portrait.analysis.passionPath.name}
-${portrait.analysis.passionPath.description}
+${portrait.analysis?.passionPath ? `Ścieżka Pasji: ${portrait.analysis.passionPath.name || 'Nie określono'}
+${portrait.analysis.passionPath.description || 'Brak opisu'}` : ''}
 
-Ścieżka Bólu: ${portrait.analysis.painPath.name}
-${portrait.analysis.painPath.description}
+${portrait.analysis?.painPath ? `Ścieżka Bólu: ${portrait.analysis.painPath.name || 'Nie określono'}
+${portrait.analysis.painPath.description || 'Brak opisu'}` : ''}
 
-Zwierzę Duchowe: ${portrait.analysis.spiritAnimal.name}
-${portrait.analysis.spiritAnimal.description}
+${portrait.analysis?.spiritAnimal ? `Zwierzę Duchowe: ${portrait.analysis.spiritAnimal.name || 'Nie określono'}
+${portrait.analysis.spiritAnimal.description || 'Brak opisu'}` : ''}
+
+${portrait.analysis?.guardianAngel ? `Anioł Stróż: ${portrait.analysis.guardianAngel.name || 'Nie określono'}
+${portrait.analysis.guardianAngel.description || 'Brak opisu'}` : ''}
 
 Boska Ochrona:
-${portrait.analysis.divineProtection}
+${portrait.analysis?.divineProtection || 'Brak opisu boskiej ochrony'}
     `.trim();
 
     const splitAnalysis = pdf.splitTextToSize(analysisText, pageWidth - 40);
@@ -79,8 +87,9 @@ ${portrait.analysis.divineProtection}
     // Dodaj datę
     pdf.setFontSize(10);
     pdf.setTextColor(167, 139, 250); // Średni fiolet
+    const creationDate = portrait.createdAt ? new Date(portrait.createdAt) : new Date();
     pdf.text(
-      `Wygenerowano: ${new Date(portrait.createdAt).toLocaleDateString('pl-PL', {
+      `Wygenerowano: ${creationDate.toLocaleDateString('pl-PL', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',

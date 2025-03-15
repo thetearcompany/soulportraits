@@ -61,7 +61,6 @@ Dane do analizy:
 Imię: ${birthData.firstName}
 Nazwisko: ${birthData.lastName}
 Data urodzenia: ${birthData.birthDate}
-Godzina urodzenia: ${birthData.birthTime}
 Miejsce urodzenia: ${birthData.birthPlace}
 
 Proszę o interpretację, która:
@@ -159,12 +158,25 @@ Proszę o interpretację, która:
     }
 
     // Generujemy obraz na podstawie analizy
+    const imagePrompt = `Create a 3D cartoon-style portrait of a person with mystical elements. The image should be:
+    - Stylized 3D cartoon character with smooth, rounded features
+    - Soft, ethereal lighting with gentle gradients
+    - Mystical elements like floating geometric shapes and sacred symbols
+    - Color scheme: deep purples, soft blues, and golden accents
+    - Overall mood: peaceful and contemplative
+    - Style: modern 3D cartoon with Pixar-like quality
+    - Background: abstract mystical space with sacred geometry patterns
+    - Character should have a gentle, wise expression
+    - Include subtle particle effects and light beams
+    - Resolution: high quality, detailed 3D rendering`;
+
     const imageResponse = await openai.images.generate({
       model: "dall-e-3",
-      prompt: `Create a mystical portrait inspired by Kabbalah and sacred geometry. The image should feature flowing light patterns, geometric shapes, and ethereal colors. Use deep purples, rich blues, and golden accents. The composition should be abstract and artistic, with a focus on spiritual symbolism. The overall mood should be mystical and contemplative.`,
+      prompt: imagePrompt,
+      n: 1,
       size: "1024x1024",
       quality: "standard",
-      style: "vivid",
+      style: "vivid"
     });
 
     const imageUrl = imageResponse.data[0]?.url;

@@ -9,30 +9,34 @@ export interface SpiritAnimal {
 export interface NumerologicalData {
   name: string;
   birthDate: string;
-  birthTime: string;
   birthPlace: string;
 }
 
+export interface GuardianAngel {
+  name: string;
+  description?: string;
+}
+
 export interface KabalisticInterpretation {
-  treeOfLife: {
+  treeOfLife?: {
     sefira: string;
     description: string;
     attributes: string[];
     challenges: string[];
   };
-  lifeNumber: {
+  lifeNumber?: {
     number: number;
     meaning: string;
     strengths: string[];
     weaknesses: string[];
   };
-  passionPath: {
+  passionPath?: {
     name: string;
     description: string;
     spiritualGifts: string[];
     mission: string;
   };
-  painPath: {
+  painPath?: {
     name: string;
     description: string;
     lessons: string[];
@@ -48,14 +52,15 @@ export interface KabalisticInterpretation {
     symbolism: string[];
     guidance: string;
   };
+  guardianAngel: GuardianAngel;
 }
 
 export interface SavedPortrait {
   id: string;
-  imageUrl: string;
+  createdAt: string;
   birthData: BirthData;
   analysis: KabalisticInterpretation;
-  createdAt: string;
+  imageUrl?: string;
 }
 
 export interface PortraitHistoryHook {

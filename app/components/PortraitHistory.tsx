@@ -41,14 +41,16 @@ export const PortraitHistory: React.FC<PortraitHistoryProps> = ({
             className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200"
           >
             <div className="relative aspect-square w-full">
-              <Image
-                src={portrait.imageUrl}
-                alt={`Portret duszy i duchowego zwierzęcia`}
-                fill
-                className="object-cover cursor-pointer"
-                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                onClick={() => onSelect(portrait)}
-              />
+              {portrait.imageUrl && (
+                <Image
+                  src={portrait.imageUrl}
+                  alt={`Portret duszy i duchowego zwierzęcia`}
+                  fill
+                  className="object-cover cursor-pointer"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  onClick={() => onSelect(portrait)}
+                />
+              )}
             </div>
             <div className="p-4">
               <div className="flex justify-between items-start mb-2">

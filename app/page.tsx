@@ -23,7 +23,6 @@ export default function Home() {
       firstName: '',
       lastName: '',
       birthDate: '',
-      birthTime: '',
       birthPlace: ''
     }
   });
@@ -178,22 +177,6 @@ export default function Home() {
                   />
                   {fieldErrors.birthDate && (
                     <p className="mt-1 text-sm text-red-600">{fieldErrors.birthDate}</p>
-                  )}
-                </div>
-                <div>
-                  <label htmlFor="birthTime" className="block text-sm font-medium text-gray-700 mb-2">
-                    Czas Urodzenia
-                  </label>
-                  <input
-                    type="time"
-                    id="birthTime"
-                    {...register('birthTime', { required: true })}
-                    className={`w-full p-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 ${
-                      fieldErrors.birthTime ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                  />
-                  {fieldErrors.birthTime && (
-                    <p className="mt-1 text-sm text-red-600">{fieldErrors.birthTime}</p>
                   )}
                 </div>
                 <div>
