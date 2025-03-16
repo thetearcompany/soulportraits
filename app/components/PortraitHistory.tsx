@@ -41,7 +41,7 @@ export const PortraitHistory: React.FC<PortraitHistoryProps> = ({
             className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200"
           >
             <div className="relative aspect-square w-full">
-              {portrait.spiritAnimal.image.url && (
+              {portrait.spiritAnimal?.image?.url && (
                 <Image
                   src={portrait.spiritAnimal.image.url}
                   alt={`Portret duszy i duchowego zwierzęcia`}

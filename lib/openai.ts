@@ -112,6 +112,12 @@ export async function generatePortrait(birthData: BirthData): Promise<Omit<Saved
   };
 }
 
+// Znajdź odpowiednik angielski dla polskiej nazwy zwierzęcia
+const getEnglishAnimalName = (polishName: string): string => {
+  const animal = SPIRIT_ANIMALS.find(a => a.pl.toLowerCase() === polishName.toLowerCase());
+  return animal ? animal.en : polishName;
+};
+
 export async function generatePortraitFromOpenAI(birthData: BirthData) {
   try {
     // Tworzymy nowy wątek
@@ -267,49 +273,53 @@ Proszę o interpretację, która:
       throw new Error('Brak zwierzęcia duchowego w odpowiedzi');
     }
 
-    // Pobieranie obrazu z Unsplash
-    const spiritAnimalName = kabalisticInterpretation.spiritAnimal.name;
-    const unsplashResponse = await fetch(`https://api.unsplash.com/photos/random?query=${spiritAnimalName}&client_id=${process.env.UNSPLASH_ACCESS_KEY}`);
-    const unsplashData = await unsplashResponse.json();
+    // Pobierz angielską nazwę zwierzęcia
+    const englishAnimalName = getEnglishAnimalName(kabalisticInterpretation.spiritAnimal.name);
+    console.log('Szukam obrazu dla zwierzęcia:', englishAnimalName);
 
-    if (!unsplashData || !unsplashData.urls || !unsplashData.urls.regular) {
-      throw new Error('Nie udało się pobrać obrazu z Unsplash');
+    // Po otrzymaniu analizy od asystenta, generujemy obraz
+    const imagePrompt = `Create a 3D cartoon-style portrait of a person with their spirit animal (${kabalisticInterpretation.spiritAnimal?.name}). The image should be:
+    - Stylized 3D cartoon character with smooth, rounded features
+    - Include their spirit animal as a spiritual companion
+    - The spirit animal should be semi-transparent or ethereal, showing its mystical nature
+    - Soft, ethereal lighting with gentle gradients
+    - Mystical elements like floating geometric shapes and sacred symbols
+    - Color scheme: deep purples, soft blues, and golden accents
+    - Overall mood: peaceful and contemplative
+    - Style: modern 3D cartoon with Pixar-like quality
+    - Background: abstract mystical space with sacred geometry patterns
+    - Character should have a gentle, wise expression
+    - The spirit animal and person should have a clear connection or interaction
+    - Include subtle particle effects and light beams
+    - Resolution: high quality, detailed 3D rendering`;
+
+    // Generowanie obrazu przez DALL-E
+    const imageResponse = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: imagePrompt,
+      n: 1,
+      size: "1024x1024",
+      quality: "standard",
+      style: "vivid"
+    });
+
+    console.log('DALL-E response:', imageResponse); // Dodaj log
+
+    const imageUrl = imageResponse.data[0]?.url;
+    if (!imageUrl) {
+      throw new Error('Nie udało się wygenerować obrazu');
     }
 
-    const imageUrl = unsplashData.urls.regular;
-
-    // Dodanie obrazu do zwierzęcia duchowego
-    kabalisticInterpretation.spiritAnimal.image = {
-      url: imageUrl,
-      photographer: {
-        name: unsplashData.user.name,
-        username: unsplashData.user.username,
-      },
-      unsplashUrl: unsplashData.links.html,
-    };
-
+    // Zwracamy wynik z obrazem
     return {
       analysis: kabalisticInterpretation,
+      generatedImage: imageUrl, // Upewnij się, że to pole jest ustawione
       birthData,
       createdAt: new Date().toISOString(),
     };
+
   } catch (error) {
-    console.error('Zakłócenie energii:', error);
-    
-    // Sprawdzamy, czy błąd jest związany z brakiem środków
-    if (error instanceof Error && 
-        (error.message.includes('insufficient_quota') || 
-         error.message.includes('billing_hard_limit_reached') ||
-         error.message.includes('access_terminated'))) {
-      throw new Error(ERROR_MESSAGES.INSUFFICIENT_FUNDS);
-    }
-    
-    // Jeśli to jeden z naszych komunikatów, przekazujemy go dalej
-    if (error instanceof Error && Object.values(ERROR_MESSAGES).includes(error.message)) {
-      throw error;
-    }
-    
-    // Dla wszystkich innych błędów zwracamy ogólny komunikat
-    throw new Error(ERROR_MESSAGES.GENERIC);
+    console.error('Błąd podczas generowania portretu:', error);
+    throw error;
   }
 } 

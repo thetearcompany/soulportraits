@@ -56,6 +56,7 @@ export interface KabalisticInterpretation {
     guidance: string;
   };
   guardianAngel: GuardianAngel;
+  imageUrl?: string;
 }
 
 export interface SpiritAnimalImage {

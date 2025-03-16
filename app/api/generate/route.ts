@@ -19,6 +19,9 @@ export async function POST(request: Request) {
     const portraitWithImage: SavedPortrait = {
       id: uuidv4(),
       createdAt: new Date().toISOString(),
+      birthData: portrait.birthData,
+      analysis: portrait.analysis,
+      generatedImage: portrait.generatedImage,
       firstName: portrait.birthData.firstName,
       lastName: portrait.birthData.lastName,
       birthDate: portrait.birthData.birthDate,
@@ -26,8 +29,7 @@ export async function POST(request: Request) {
       spiritAnimal: portrait.analysis.spiritAnimal,
       numerology: portrait.analysis.numerology,
       chakras: portrait.analysis.chakras,
-      advice: portrait.analysis.advice,
-      analysis: portrait.analysis
+      advice: portrait.analysis.advice
     };
 
     return NextResponse.json(portraitWithImage);

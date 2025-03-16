@@ -8,7 +8,6 @@ import { SoulPortraitResult } from '@/app/components/SoulPortraitResult';
 import { SavedPortrait } from '@/types/portrait';
 import { birthDataSchema, type BirthData } from '@/lib/validations';
 import { ERROR_MESSAGES } from '@/lib/constants';
-import { RandomAnimalImage } from '@/app/components/RandomAnimalImage';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
@@ -88,37 +87,40 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-primary mb-4">
-            Twój Portret Duszy
+    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Tło z gradientami */}
+      <div className="fixed inset-0">
+        <div className="absolute top-0 layout-background" />
+        <div className="absolute bottom-0 layout-background-bottom" />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-amber-400">
+            Portret Twojej Duszy
           </h1>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-xl text-amber-200/90 mb-8">
             Odkryj swoją duchową esencję poprzez starożytną mądrość
           </p>
-          <div className="max-w-2xl mx-auto">
-            <RandomAnimalImage />
-          </div>
         </div>
 
-        <div className="flex justify-center space-x-4 mb-8">
+        <div className="flex justify-center space-x-4 mb-12">
           <button
             onClick={() => setView('create')}
-            className={`px-4 py-2 rounded-lg ${
+            className={`px-6 py-3 rounded-xl text-lg font-medium transition-all duration-300 ${
               view === 'create'
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-background text-muted-foreground hover:bg-secondary'
+                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/30'
+                : 'bg-white/10 text-amber-200 hover:bg-white/20 backdrop-blur-sm'
             }`}
           >
             Stwórz Portret
           </button>
           <button
             onClick={() => setView('history')}
-            className={`px-4 py-2 rounded-lg ${
+            className={`px-6 py-3 rounded-xl text-lg font-medium transition-all duration-300 ${
               view === 'history'
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-background text-muted-foreground hover:bg-secondary'
+                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/30'
+                : 'bg-white/10 text-amber-200 hover:bg-white/20 backdrop-blur-sm'
             }`}
           >
             Historia
@@ -126,98 +128,105 @@ export default function Home() {
         </div>
 
         {view === 'create' && !result && (
-          <div className="max-w-2xl mx-auto bg-card/30 p-6 rounded-lg shadow-lg">
+          <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-xl border border-amber-500/20">
             {error && (
-              <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                <p className="text-destructive">{error}</p>
+              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl backdrop-blur-sm">
+                <p className="text-red-300">{error}</p>
               </div>
             )}
             
-            <form onSubmit={hookHandleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={hookHandleSubmit(onSubmit)} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="firstName" className="block text-lg font-medium text-amber-200 mb-2">
                     Imię
                   </label>
                   <input
                     type="text"
                     id="firstName"
                     {...register('firstName', { required: true })}
-                    className={`w-full p-2 border rounded-lg bg-background transition-colors ${
-                      fieldErrors.firstName 
-                        ? 'border-destructive focus:border-destructive focus:ring-destructive/30' 
-                        : 'border-input focus:border-input focus:ring-ring/20'
-                    }`}
+                    className={`w-full p-3 rounded-xl bg-white/5 border transition-all duration-300 backdrop-blur-sm
+                      ${fieldErrors.firstName 
+                        ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' 
+                        : 'border-amber-500/20 focus:border-amber-500/50 focus:ring-amber-500/20'
+                      } text-amber-50 placeholder-amber-200/50`}
                   />
                   {fieldErrors.firstName && (
-                    <p className="mt-1 text-sm text-destructive">{fieldErrors.firstName}</p>
+                    <p className="mt-2 text-sm text-red-300">{fieldErrors.firstName}</p>
                   )}
                 </div>
+                
                 <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="lastName" className="block text-lg font-medium text-amber-200 mb-2">
                     Nazwisko
                   </label>
                   <input
                     type="text"
                     id="lastName"
                     {...register('lastName', { required: true })}
-                    className={`w-full p-2 border rounded-lg bg-background transition-colors ${
-                      fieldErrors.lastName 
-                        ? 'border-destructive focus:border-destructive focus:ring-destructive/30' 
-                        : 'border-input focus:border-input focus:ring-ring/20'
-                    }`}
+                    className={`w-full p-3 rounded-xl bg-white/5 border transition-all duration-300 backdrop-blur-sm
+                      ${fieldErrors.lastName 
+                        ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' 
+                        : 'border-amber-500/20 focus:border-amber-500/50 focus:ring-amber-500/20'
+                      } text-amber-50 placeholder-amber-200/50`}
                   />
                   {fieldErrors.lastName && (
-                    <p className="mt-1 text-sm text-destructive">{fieldErrors.lastName}</p>
+                    <p className="mt-2 text-sm text-red-300">{fieldErrors.lastName}</p>
                   )}
                 </div>
+
                 <div>
-                  <label htmlFor="birthDate" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="birthDate" className="block text-lg font-medium text-amber-200 mb-2">
                     Data Urodzenia
                   </label>
                   <input
                     type="date"
                     id="birthDate"
                     {...register('birthDate', { required: true })}
-                    className={`w-full p-2 border rounded-lg bg-background/60 transition-colors ${
-                      fieldErrors.birthDate 
-                        ? 'border-destructive focus:border-destructive focus:ring-destructive/30' 
-                        : 'border-input focus:border-input focus:ring-ring/20'
-                    }`}
+                    className={`w-full p-3 rounded-xl bg-white/5 border transition-all duration-300 backdrop-blur-sm
+                      ${fieldErrors.birthDate 
+                        ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' 
+                        : 'border-amber-500/20 focus:border-amber-500/50 focus:ring-amber-500/20'
+                      } text-amber-50`}
                   />
                   {fieldErrors.birthDate && (
-                    <p className="mt-1 text-sm text-destructive">{fieldErrors.birthDate}</p>
+                    <p className="mt-2 text-sm text-red-300">{fieldErrors.birthDate}</p>
                   )}
                 </div>
+
                 <div>
-                  <label htmlFor="birthPlace" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="birthPlace" className="block text-lg font-medium text-amber-200 mb-2">
                     Miejsce Urodzenia
                   </label>
                   <input
                     type="text"
                     id="birthPlace"
                     {...register('birthPlace', { required: true })}
-                    className={`w-full p-2 border rounded-lg bg-background transition-colors ${
-                      fieldErrors.birthPlace 
-                        ? 'border-destructive focus:border-destructive focus:ring-destructive/30' 
-                        : 'border-input focus:border-input focus:ring-ring/20'
-                    }`}
+                    className={`w-full p-3 rounded-xl bg-white/5 border transition-all duration-300 backdrop-blur-sm
+                      ${fieldErrors.birthPlace 
+                        ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' 
+                        : 'border-amber-500/20 focus:border-amber-500/50 focus:ring-amber-500/20'
+                      } text-amber-50 placeholder-amber-200/50`}
                     placeholder="np. Warszawa, Polska"
                   />
                   {fieldErrors.birthPlace && (
-                    <p className="mt-1 text-sm text-destructive">{fieldErrors.birthPlace}</p>
+                    <p className="mt-2 text-sm text-red-300">{fieldErrors.birthPlace}</p>
                   )}
                 </div>
               </div>
+
               <button
                 type="submit"
                 disabled={isLoading || !isValid || !isDirty}
-                className={`w-full py-3 px-6 rounded-lg text-primary-foreground transition-colors duration-200 ${
-                  isLoading || !isValid || !isDirty
-                    ? 'bg-primary/50 cursor-not-allowed'
-                    : 'bg-primary hover:bg-primary/90'
-                }`}
+                className={`w-full py-4 px-6 rounded-xl text-lg font-medium transition-all duration-500
+                  ${isLoading || !isValid || !isDirty
+                    ? 'bg-amber-500/30 cursor-not-allowed text-amber-200/50'
+                    : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg shadow-amber-500/30'
+                  } relative group overflow-hidden`}
               >
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-200/0 via-amber-200/30 to-amber-200/0 
+                              opacity-0 group-hover:opacity-100 transition-opacity duration-700 
+                              animate-shine" />
                 {isLoading ? 'Trwa proces tworzenia portretu...' : 'Stwórz Portret Duszy'}
               </button>
             </form>
@@ -225,7 +234,7 @@ export default function Home() {
         )}
 
         {view === 'create' && result && (
-          <div className="max-w-2xl mx-auto mt-8">
+          <div className="max-w-4xl mx-auto mt-8">
             <SoulPortraitResult 
               portrait={result} 
               onReset={resetForm} 
