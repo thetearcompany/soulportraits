@@ -2,104 +2,179 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { SavedPortrait } from '@/types/portrait';
 
+async function getImageAsBase64(imageUrl: string): Promise<string> {
+  try {
+    // Najpierw próbujemy pobrać obraz bezpośrednio
+    const response = await fetch(imageUrl, {
+      mode: 'cors',
+      credentials: 'same-origin'
+    });
+    
+    if (!response.ok) {
+      throw new Error('Nie udało się pobrać obrazu');
+    }
+    
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error('Błąd podczas pobierania obrazu:', error);
+    // Jeśli nie udało się pobrać obrazu, zwróć placeholder
+    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+  }
+}
+
 export async function generatePortraitPDF(portrait: SavedPortrait, containerRef: HTMLElement) {
   if (!portrait || !containerRef) {
-    throw new Error('Brak wymaganych danych do generowania PDF');
+    throw new Error('Brak wymaganych danych do wygenerowania PDF');
   }
 
-  // Utwórz nowy dokument PDF w formacie A4
-  const pdf = new jsPDF('p', 'mm', 'a4');
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  
-  // Dodaj tło
-  pdf.setFillColor(88, 28, 135); // Głęboki fiolet
-  pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-  
-  // Dodaj gradient
-  pdf.setFillColor(139, 92, 246); // Jasny fiolet
-  pdf.rect(0, 0, pageWidth, 40, 'F');
-  
-  // Dodaj nagłówek
-  pdf.setFontSize(24);
-  pdf.setTextColor(255, 255, 255); // Biały
-  pdf.text('Portret Duszy', pageWidth / 2, 20, { align: 'center' });
-  
-  // Dodaj dane osoby
-  pdf.setFontSize(12);
-  pdf.setTextColor(216, 180, 254); // Jasny fiolet
-  const fullName = `${portrait.birthData?.firstName || ''} ${portrait.birthData?.lastName || ''}`.trim();
-  pdf.text(fullName, pageWidth / 2, 30, { align: 'center' });
-
   try {
-    // Konwertuj kontener na canvas
-    const canvas = await html2canvas(containerRef, {
+    // Pobierz obraz jako base64 przed generowaniem PDF
+    const imageBase64 = await getImageAsBase64(portrait.imageUrl || '');
+
+    // Stwórz nowy element z czystym HTML i CSS
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.cssText = `
+      width: 800px;
+      padding: 40px;
+      background-color: #FFFFFF;
+      font-family: Arial, sans-serif;
+    `;
+
+    // Dodaj zawartość HTML używając base64 obrazu
+    pdfContainer.innerHTML = `
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #000000; font-size: 24px; margin-bottom: 20px;">
+          Kabalistyczny Portret Duszy
+        </h1>
+        <div style="margin-bottom: 20px;">
+          <img src="${imageBase64}" 
+               style="max-width: 400px; height: auto;" 
+          />
+        </div>
+        <div style="margin-bottom: 10px; font-size: 18px; color: #000000;">
+          ${portrait.birthData.firstName} ${portrait.birthData.lastName}
+        </div>
+        <div style="color: #000000; font-size: 14px;">
+          Data urodzenia: ${portrait.birthData.birthDate}
+        </div>
+        <div style="color: #000000; font-size: 14px;">
+          Miejsce urodzenia: ${portrait.birthData.birthPlace}
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; color: #000000;">
+        <h2 style="color: #000000; font-size: 20px; margin-bottom: 15px;">
+          Cel Duszy
+        </h2>
+        <p style="margin-bottom: 20px; line-height: 1.6;">
+          ${portrait.analysis.soulPurpose}
+        </p>
+
+        ${portrait.analysis.treeOfLife ? `
+          <h2 style="color: #000000; font-size: 20px; margin-bottom: 15px;">
+            Drzewo Życia - Sefira ${portrait.analysis.treeOfLife.sefira}
+          </h2>
+          <p style="margin-bottom: 20px; line-height: 1.6;">
+            ${portrait.analysis.treeOfLife.description}
+          </p>
+        ` : ''}
+
+        ${portrait.analysis.spiritAnimal ? `
+          <h2 style="color: #000000; font-size: 20px; margin-bottom: 15px;">
+            Zwierzę Duchowe
+          </h2>
+          <p style="margin-bottom: 10px;">
+            <strong>${portrait.analysis.spiritAnimal.name}</strong>
+          </p>
+          <p style="margin-bottom: 20px; line-height: 1.6;">
+            ${portrait.analysis.spiritAnimal.description}
+          </p>
+        ` : ''}
+
+        ${portrait.analysis.guardianAngel ? `
+          <h2 style="color: #000000; font-size: 20px; margin-bottom: 15px;">
+            Anioł Stróż
+          </h2>
+          <p style="margin-bottom: 10px;">
+            <strong>${portrait.analysis.guardianAngel.name}</strong>
+          </p>
+          <p style="margin-bottom: 20px; line-height: 1.6;">
+            ${portrait.analysis.guardianAngel.description}
+          </p>
+        ` : ''}
+
+        <h2 style="color: #000000; font-size: 20px; margin-bottom: 15px;">
+          Boska Ochrona
+        </h2>
+        <p style="margin-bottom: 20px; line-height: 1.6;">
+          ${portrait.analysis.divineProtection}
+        </p>
+      </div>
+    `;
+
+    // Dodaj tymczasowo do dokumentu w ukrytym kontenerze
+    const hiddenContainer = document.createElement('div');
+    hiddenContainer.style.position = 'absolute';
+    hiddenContainer.style.left = '-9999px';
+    hiddenContainer.appendChild(pdfContainer);
+    document.body.appendChild(hiddenContainer);
+
+    const canvas = await html2canvas(pdfContainer, {
       scale: 2,
       useCORS: true,
       logging: false,
+      backgroundColor: '#FFFFFF',
+      allowTaint: true,
+      foreignObjectRendering: false
     });
 
-    // Konwertuj canvas na obrazek
+    // Usuń tymczasowy kontener
+    document.body.removeChild(hiddenContainer);
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
     const imgData = canvas.toDataURL('image/jpeg', 1.0);
     
-    // Oblicz wymiary obrazka, zachowując proporcje
-    const imgWidth = pageWidth - 40; // marginesy 20mm z każdej strony
+    // Oblicz wymiary z zachowaniem proporcji
+    const imgWidth = pageWidth - 20;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     
-    // Dodaj obrazek
-    pdf.addImage(imgData, 'JPEG', 20, 40, imgWidth, imgHeight);
+    let remainingHeight = imgHeight;
+    let currentPosition = 0;
     
-    // Dodaj analizę
-    const textY = imgHeight + 60;
-    pdf.setFontSize(12);
-    pdf.setTextColor(216, 180, 254); // Jasny fiolet
-    
-    // Podziel tekst na linie
-    const analysisText = `
-Cel Duszy:
-${portrait.analysis?.soulPurpose || 'Brak opisu celu duszy'}
+    while (remainingHeight > 0) {
+      const heightOnThisPage = Math.min(remainingHeight, pageHeight - 20);
+      
+      pdf.addImage(
+        imgData,
+        'JPEG',
+        10,
+        10,
+        imgWidth,
+        imgHeight,
+        '',
+        'FAST',
+        0,
+        -currentPosition
+      );
+      
+      remainingHeight -= heightOnThisPage;
+      currentPosition += heightOnThisPage;
+      
+      if (remainingHeight > 0) {
+        pdf.addPage();
+      }
+    }
 
-${portrait.analysis?.treeOfLife ? `Drzewo Życia - Sefira ${portrait.analysis.treeOfLife.sefira || 'Nie określono'}:
-${portrait.analysis.treeOfLife.description || 'Brak opisu'}` : ''}
-
-${portrait.analysis?.lifeNumber ? `Liczba Życia: ${portrait.analysis.lifeNumber.number || 'Nie określono'}
-${portrait.analysis.lifeNumber.meaning || 'Brak opisu'}` : ''}
-
-${portrait.analysis?.passionPath ? `Ścieżka Pasji: ${portrait.analysis.passionPath.name || 'Nie określono'}
-${portrait.analysis.passionPath.description || 'Brak opisu'}` : ''}
-
-${portrait.analysis?.painPath ? `Ścieżka Bólu: ${portrait.analysis.painPath.name || 'Nie określono'}
-${portrait.analysis.painPath.description || 'Brak opisu'}` : ''}
-
-${portrait.analysis?.spiritAnimal ? `Zwierzę Duchowe: ${portrait.analysis.spiritAnimal.name || 'Nie określono'}
-${portrait.analysis.spiritAnimal.description || 'Brak opisu'}` : ''}
-
-${portrait.analysis?.guardianAngel ? `Anioł Stróż: ${portrait.analysis.guardianAngel.name || 'Nie określono'}
-${portrait.analysis.guardianAngel.description || 'Brak opisu'}` : ''}
-
-Boska Ochrona:
-${portrait.analysis?.divineProtection || 'Brak opisu boskiej ochrony'}
-    `.trim();
-
-    const splitAnalysis = pdf.splitTextToSize(analysisText, pageWidth - 40);
-    pdf.text(splitAnalysis, 20, textY);
-    
-    // Dodaj datę
-    pdf.setFontSize(10);
-    pdf.setTextColor(167, 139, 250); // Średni fiolet
-    const creationDate = portrait.createdAt ? new Date(portrait.createdAt) : new Date();
-    pdf.text(
-      `Wygenerowano: ${creationDate.toLocaleDateString('pl-PL', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })}`,
-      20,
-      pageHeight - 20
-    );
-
-    // Zapisz PDF
-    pdf.save('portret-duszy.pdf');
+    pdf.save(`portret-duszy-${portrait.birthData.firstName}-${portrait.birthData.lastName}.pdf`);
   } catch (error) {
     console.error('Błąd podczas generowania PDF:', error);
     throw error;

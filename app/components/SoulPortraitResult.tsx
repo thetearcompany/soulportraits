@@ -26,40 +26,9 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
     savePortraitWithCheck();
   }, [portrait, savePortrait]);
 
-  const handleShare = async (platform: 'facebook' | 'twitter' | 'linkedin') => {
-    const text = encodeURIComponent('Odkryj swój Kabalistyczny Portret Duszy! 🔯✨');
-    const url = encodeURIComponent(window.location.href);
-    
-    const shareUrls = {
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-      twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`
-    };
-    
-    window.open(shareUrls[platform], '_blank', 'width=600,height=400');
-  };
-
-  const handleDownload = async () => {
-    if (!portrait.imageUrl) return;
-    
-    try {
-      const response = await fetch(portrait.imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'portret-duszy.png';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Błąd podczas pobierania obrazu:', error);
-    }
-  };
-
   return (
     <motion.div 
+      id="portrait-container"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -329,30 +298,49 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.4 }}
-                  className="bg-white/50 p-4 rounded-lg mt-6"
+                  className="bg-white/50 p-6 rounded-lg mt-6"
                 >
-                  <h4 className="text-lg font-medium mb-3 text-center">
-                    Twoje Zwierzę Duchowe: {portrait.analysis.spiritAnimal.name || 'Nie określono'}
-                  </h4>
-                  {portrait.analysis.spiritAnimal.description && (
-                    <p className="mb-3 text-center italic">{portrait.analysis.spiritAnimal.description}</p>
-                  )}
-                  {portrait.analysis.spiritAnimal.symbolism && portrait.analysis.spiritAnimal.symbolism.length > 0 && (
-                    <div>
-                      <h5 className="font-medium mb-2">Symbolika</h5>
-                      <ul className="list-disc list-inside">
-                        {portrait.analysis.spiritAnimal.symbolism.map((symbol, i) => (
-                          <li key={i}>{symbol}</li>
-                        ))}
-                      </ul>
+                  <div className="flex flex-col md:flex-row gap-6 items-center">
+                    <div className="w-full md:w-1/3">
+                      <div className="relative aspect-square w-full rounded-xl overflow-hidden shadow-lg">
+                        <Image
+                          src={`/spirit-animals/${portrait.analysis.spiritAnimal.name.toLowerCase().replace(/\s+/g, '-')}.jpg`}
+                          alt={`Zwierzę Duchowe - ${portrait.analysis.spiritAnimal.name}`}
+                          fill
+                          className="object-cover hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          onError={(e) => {
+                            const img = e.target as HTMLImageElement;
+                            img.src = '/spirit-animals/default.jpg';
+                          }}
+                        />
+                      </div>
                     </div>
-                  )}
-                  {portrait.analysis.spiritAnimal.guidance && (
-                    <div className="mt-3">
-                      <h5 className="font-medium mb-2">Przewodnictwo</h5>
-                      <p className="italic">{portrait.analysis.spiritAnimal.guidance}</p>
+                    <div className="w-full md:w-2/3">
+                      <h4 className="text-2xl font-medium mb-3 text-center md:text-left">
+                        Twoje Zwierzę Duchowe: {portrait.analysis.spiritAnimal.name || 'Nie określono'}
+                      </h4>
+                      {portrait.analysis.spiritAnimal.description && (
+                        <p className="mb-4 italic">{portrait.analysis.spiritAnimal.description}</p>
+                      )}
+                      {portrait.analysis.spiritAnimal.symbolism && portrait.analysis.spiritAnimal.symbolism.length > 0 && (
+                        <div className="mt-4">
+                          <h5 className="font-medium mb-2">Symbolika</h5>
+                          <ul className="list-disc list-inside space-y-1">
+                            {portrait.analysis.spiritAnimal.symbolism.map((symbol, i) => (
+                              <li key={i}>{symbol}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {portrait.analysis.spiritAnimal.guidance && (
+                        <div className="mt-4">
+                          <h5 className="font-medium mb-2">Przewodnictwo</h5>
+                          <p className="italic">{portrait.analysis.spiritAnimal.guidance}</p>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </motion.div>
               )}
             </div>
@@ -360,45 +348,14 @@ export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
-        <div className="grid grid-cols-2 gap-2">
-          {portrait.imageUrl && (
-            <button
-              onClick={handleDownload}
-              className="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
-            >
-              Pobierz Obraz
-            </button>
-          )}
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          <button
-            onClick={() => handleShare('facebook')}
-            className="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-          >
-            Facebook
-          </button>
-          <button
-            onClick={() => handleShare('twitter')}
-            className="py-2 px-4 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors duration-200"
-          >
-            Twitter
-          </button>
-          <button
-            onClick={() => handleShare('linkedin')}
-            className="py-2 px-4 bg-blue-800 text-white rounded-lg hover:bg-blue-900 transition-colors duration-200"
-          >
-            LinkedIn
-          </button>
-        </div>
+      <div className="mt-8">
+        <button
+          onClick={onReset}
+          className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-colors duration-200 font-medium"
+        >
+          Stwórz nowy portret
+        </button>
       </div>
-
-      <button
-        onClick={onReset}
-        className="mt-6 w-full py-2 px-4 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors duration-200"
-      >
-        Stwórz nowy portret
-      </button>
     </motion.div>
   );
 }; 

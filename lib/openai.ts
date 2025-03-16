@@ -158,8 +158,10 @@ Proszę o interpretację, która:
     }
 
     // Generujemy obraz na podstawie analizy
-    const imagePrompt = `Create a 3D cartoon-style portrait of a person with mystical elements. The image should be:
+    const imagePrompt = `Create a 3D cartoon-style portrait of a person with their spirit animal. The image should be:
     - Stylized 3D cartoon character with smooth, rounded features
+    - Include their spirit animal (${kabalisticInterpretation.spiritAnimal?.name}) as a spiritual companion
+    - The spirit animal should be semi-transparent or ethereal, showing its mystical nature
     - Soft, ethereal lighting with gentle gradients
     - Mystical elements like floating geometric shapes and sacred symbols
     - Color scheme: deep purples, soft blues, and golden accents
@@ -167,6 +169,7 @@ Proszę o interpretację, która:
     - Style: modern 3D cartoon with Pixar-like quality
     - Background: abstract mystical space with sacred geometry patterns
     - Character should have a gentle, wise expression
+    - The spirit animal and person should have a clear connection or interaction
     - Include subtle particle effects and light beams
     - Resolution: high quality, detailed 3D rendering`;
 
