@@ -2,7 +2,6 @@ import OpenAI from 'openai';
 import { BirthData } from './validations';
 import { OPENAI_ASSISTANT_ID, ERROR_MESSAGES } from './constants';
 import { SavedPortrait } from '@/types/portrait';
-import { v4 as uuidv4 } from 'uuid';
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error('Missing OPENAI_API_KEY environment variable');

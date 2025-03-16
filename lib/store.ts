@@ -15,12 +15,12 @@ const db = new PortraitDatabase()
 
 const isPortraitUnique = (portrait: SavedPortrait, existingPortraits: SavedPortrait[]): boolean => {
   return !existingPortraits.some(existing => 
-    existing.birthData.firstName === portrait.birthData.firstName &&
-    existing.birthData.lastName === portrait.birthData.lastName &&
-    existing.birthData.birthDate === portrait.birthData.birthDate &&
-    existing.birthData.birthPlace === portrait.birthData.birthPlace
-  )
-}
+    existing.firstName === portrait.firstName &&
+    existing.lastName === portrait.lastName &&
+    existing.birthDate === portrait.birthDate &&
+    existing.birthPlace === portrait.birthPlace
+  );
+};
 
 const validatePortrait = (portrait: SavedPortrait): SavedPortrait => {
   return {
