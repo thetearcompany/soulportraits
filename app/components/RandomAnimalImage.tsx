@@ -65,13 +65,13 @@ export function RandomAnimalImage() {
 
   if (isLoading || !imageData) {
     return (
-      <div className="w-full h-48 bg-muted animate-pulse rounded-lg" />
+      <div className="w-full aspect-[16/9] bg-muted animate-pulse rounded-lg" />
     );
   }
 
   return (
     <div className="relative group">
-      <div className="relative w-full h-48 overflow-hidden rounded-lg">
+      <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg">
         <Image
           src={imageData.urls.regular}
           alt="Duchowy przewodnik"
@@ -80,7 +80,7 @@ export function RandomAnimalImage() {
           sizes="(max-width: 768px) 100vw, 50vw"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-amber-500/40 to-transparent" />
         
         {/* Przycisk odświeżania */}
         <button

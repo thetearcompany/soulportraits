@@ -179,7 +179,7 @@ export default function Home() {
                     type="date"
                     id="birthDate"
                     {...register('birthDate', { required: true })}
-                    className={`w-full p-2 border rounded-lg bg-background transition-colors ${
+                    className={`w-full p-2 border rounded-lg bg-background/60 transition-colors ${
                       fieldErrors.birthDate 
                         ? 'border-destructive focus:border-destructive focus:ring-destructive/30' 
                         : 'border-input focus:border-input focus:ring-ring/20'
