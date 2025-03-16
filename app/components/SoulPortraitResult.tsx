@@ -9,7 +9,7 @@ interface SoulPortraitResultProps {
   onReset: () => void;
 }
 
-export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait, onReset }) => {
+export const SoulPortraitResult: React.FC<SoulPortraitResultProps> = ({ portrait }) => {
   const { savePortrait } = useStore();
   const [isDuplicate, setIsDuplicate] = useState(false);
 

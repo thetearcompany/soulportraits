@@ -87,7 +87,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <main className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Tło z gradientami */}
       <div className="fixed inset-0">
         <div className="absolute top-0 layout-background" />
