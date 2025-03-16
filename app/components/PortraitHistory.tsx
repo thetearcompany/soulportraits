@@ -41,9 +41,9 @@ export const PortraitHistory: React.FC<PortraitHistoryProps> = ({
             className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200"
           >
             <div className="relative aspect-square w-full">
-              {portrait.imageUrl && (
+              {portrait.spiritAnimal.image.url && (
                 <Image
-                  src={portrait.imageUrl}
+                  src={portrait.spiritAnimal.image.url}
                   alt={`Portret duszy i duchowego zwierzęcia`}
                   fill
                   className="object-cover cursor-pointer"
@@ -79,10 +79,10 @@ export const PortraitHistory: React.FC<PortraitHistoryProps> = ({
               </div>
               <div className="mt-2">
                 <p className="text-sm text-gray-600 line-clamp-2">
-                  {portrait.analysis.soulPurpose || 'Brak opisu celu duszy'}
+                  {portrait.analysis?.soulPurpose || 'Brak opisu celu duszy'}
                 </p>
               </div>
-              {portrait.analysis.spiritAnimal && (
+              {portrait.analysis?.spiritAnimal && (
                 <div className="mt-2 p-2 bg-purple-50 rounded">
                   <p className="text-sm text-purple-800 font-medium">
                     🦊 {portrait.analysis.spiritAnimal.name || 'Nie określono'}
@@ -91,7 +91,7 @@ export const PortraitHistory: React.FC<PortraitHistoryProps> = ({
               )}
               <div className="mt-2 p-2 bg-indigo-50 rounded">
                 <p className="text-sm text-indigo-800 font-medium">
-                  {portrait.birthData.firstName} {portrait.birthData.lastName}
+                  {portrait.firstName || 'Nieznane imię'} {portrait.lastName || 'Nieznane nazwisko'}
                 </p>
               </div>
             </div>

@@ -1,6 +1,8 @@
 import OpenAI from 'openai';
 import { BirthData } from './validations';
 import { OPENAI_ASSISTANT_ID, ERROR_MESSAGES } from './constants';
+import { SavedPortrait } from '@/types/portrait';
+import { v4 as uuidv4 } from 'uuid';
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error('Missing OPENAI_API_KEY environment variable');
@@ -10,7 +12,108 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function generatePortrait(birthData: BirthData) {
+export const SPIRIT_ANIMALS = [
+  { pl: 'Wilk', en: 'Wolf' },
+  { pl: 'Orzeł', en: 'Eagle' },
+  { pl: 'Niedźwiedź', en: 'Bear' },
+  { pl: 'Sowa', en: 'Owl' },
+  { pl: 'Jeleń', en: 'Deer' },
+  { pl: 'Lis', en: 'Fox' },
+  { pl: 'Tygrys', en: 'Tiger' },
+  { pl: 'Puma', en: 'Puma' },
+  { pl: 'Sokół', en: 'Falcon' },
+  { pl: 'Delfin', en: 'Dolphin' },
+  { pl: 'Żuraw', en: 'Crane' },
+  { pl: 'Wąż', en: 'Snake' },
+  { pl: 'Bóbr', en: 'Beaver' },
+  { pl: 'Kruk', en: 'Raven' },
+  { pl: 'Motyl', en: 'Butterfly' },
+  { pl: 'Wiewiórka', en: 'Squirrel' },
+  { pl: 'Lew', en: 'Lion' },
+  { pl: 'Słoń', en: 'Elephant' },
+  { pl: 'Koń', en: 'Horse' },
+  { pl: 'Żółw', en: 'Turtle' }
+];
+
+export async function generatePortrait(birthData: BirthData): Promise<Omit<SavedPortrait, 'id' | 'createdAt'>> {
+  const spiritAnimal = SPIRIT_ANIMALS[Math.floor(Math.random() * SPIRIT_ANIMALS.length)];
+  
+  return {
+    firstName: birthData.firstName,
+    lastName: birthData.lastName,
+    birthDate: birthData.birthDate,
+    birthPlace: birthData.birthPlace,
+    spiritAnimal: {
+      name: spiritAnimal.pl,
+      description: `${spiritAnimal.pl} jest twoim duchowym przewodnikiem. To potężne zwierzę symbolizuje mądrość, siłę i intuicję.`,
+      traits: ['Mądrość', 'Siła', 'Intuicja', 'Odwaga'],
+      image: {
+        url: '',  // To zostanie uzupełnione przez API endpoint
+        photographer: {
+          name: '',
+          username: ''
+        },
+        unsplashUrl: ''
+      },
+      symbolism: ['Symbol 1', 'Symbol 2'],
+      guidance: 'Przewodnictwo i wskazówki od zwierzęcia'
+    },
+    numerology: {
+      lifePathNumber: Math.floor(Math.random() * 9) + 1,
+      description: 'Twoja liczba życia wskazuje na silne połączenie z duchowym przewodnictwem.'
+    },
+    chakras: {
+      dominant: 'Ajna (Trzecie Oko)',
+      description: 'Twoja dominująca czakra wskazuje na silną intuicję i zdolności percepcyjne.'
+    },
+    advice: 'Podążaj za głosem swojego serca i ufaj swojej intuicji. Twoje duchowe przewodnictwo jest zawsze z tobą.',
+    analysis: {
+      treeOfLife: {
+        sefira: 'Keter',
+        description: 'Opis pozycji na Drzewie Życia',
+        attributes: ['Atrybut 1', 'Atrybut 2'],
+        challenges: ['Wyzwanie 1', 'Wyzwanie 2']
+      },
+      lifeNumber: {
+        number: 7,
+        meaning: 'Znaczenie liczby życia',
+        strengths: ['Mocna Strona 1', 'Mocna Strona 2'],
+        weaknesses: ['Obszar Rozwoju 1', 'Obszar Rozwoju 2']
+      },
+      passionPath: {
+        name: 'Ścieżka Pasji',
+        description: 'Opis ścieżki pasji',
+        spiritualGifts: ['Dar Duchowy 1', 'Dar Duchowy 2'],
+        mission: 'Misja życiowa'
+      },
+      painPath: {
+        name: 'Ścieżka Bólu',
+        description: 'Opis ścieżki bólu',
+        lessons: ['Lekcja 1', 'Lekcja 2'],
+        healing: {
+          methods: ['Metoda 1', 'Metoda 2'],
+          mantra: 'Mantra uzdrawiająca'
+        }
+      },
+      soulPurpose: 'Główny cel duszy',
+      spiritualGifts: ['Dar Duchowy 1', 'Dar Duchowy 2'],
+      karmicLessons: ['Lekcja Karmiczna 1', 'Lekcja Karmiczna 2'],
+      divineProtection: 'Opis boskiej ochrony',
+      spiritAnimal: {
+        name: spiritAnimal.pl,
+        description: `${spiritAnimal.pl} jest twoim duchowym przewodnikiem.`,
+        symbolism: ['Symbol 1', 'Symbol 2'],
+        guidance: 'Przewodnictwo i wskazówki od zwierzęcia'
+      },
+      guardianAngel: {
+        name: 'Anioł Stróż',
+        description: 'Opis Anioła Stróża'
+      }
+    }
+  };
+}
+
+export async function generatePortraitFromOpenAI(birthData: BirthData) {
   try {
     // Tworzymy nowy wątek
     const thread = await openai.beta.threads.create();
@@ -157,39 +260,37 @@ Proszę o interpretację, która:
       throw new Error(ERROR_MESSAGES.UNEXPECTED);
     }
 
-    // Generujemy obraz na podstawie analizy
-    const imagePrompt = `Create a 3D cartoon-style portrait of a person with their spirit animal. The image should be:
-    - Stylized 3D cartoon character with smooth, rounded features
-    - Include their spirit animal (${kabalisticInterpretation.spiritAnimal?.name}) as a spiritual companion
-    - The spirit animal should be semi-transparent or ethereal, showing its mystical nature
-    - Soft, ethereal lighting with gentle gradients
-    - Mystical elements like floating geometric shapes and sacred symbols
-    - Color scheme: deep purples, soft blues, and golden accents
-    - Overall mood: peaceful and contemplative
-    - Style: modern 3D cartoon with Pixar-like quality
-    - Background: abstract mystical space with sacred geometry patterns
-    - Character should have a gentle, wise expression
-    - The spirit animal and person should have a clear connection or interaction
-    - Include subtle particle effects and light beams
-    - Resolution: high quality, detailed 3D rendering`;
+    // Logowanie odpowiedzi
+    console.log('Odpowiedź OpenAI:', kabalisticInterpretation);
 
-    const imageResponse = await openai.images.generate({
-      model: "dall-e-3",
-      prompt: imagePrompt,
-      n: 1,
-      size: "1024x1024",
-      quality: "standard",
-      style: "vivid"
-    });
-
-    const imageUrl = imageResponse.data[0]?.url;
-    if (!imageUrl) {
-      throw new Error(ERROR_MESSAGES.GENERIC);
+    // Walidacja obecności zwierzęcia duchowego
+    if (!kabalisticInterpretation.spiritAnimal || !kabalisticInterpretation.spiritAnimal.name) {
+      throw new Error('Brak zwierzęcia duchowego w odpowiedzi');
     }
+
+    // Pobieranie obrazu z Unsplash
+    const spiritAnimalName = kabalisticInterpretation.spiritAnimal.name;
+    const unsplashResponse = await fetch(`https://api.unsplash.com/photos/random?query=${spiritAnimalName}&client_id=${process.env.UNSPLASH_ACCESS_KEY}`);
+    const unsplashData = await unsplashResponse.json();
+
+    if (!unsplashData || !unsplashData.urls || !unsplashData.urls.regular) {
+      throw new Error('Nie udało się pobrać obrazu z Unsplash');
+    }
+
+    const imageUrl = unsplashData.urls.regular;
+
+    // Dodanie obrazu do zwierzęcia duchowego
+    kabalisticInterpretation.spiritAnimal.image = {
+      url: imageUrl,
+      photographer: {
+        name: unsplashData.user.name,
+        username: unsplashData.user.username,
+      },
+      unsplashUrl: unsplashData.links.html,
+    };
 
     return {
       analysis: kabalisticInterpretation,
-      imageUrl,
       birthData,
       createdAt: new Date().toISOString(),
     };

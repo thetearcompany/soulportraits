@@ -40,7 +40,10 @@ export interface KabalisticInterpretation {
     name: string;
     description: string;
     lessons: string[];
-    healing: string;
+    healing: {
+      methods: string[];
+      mantra: string;
+    };
   };
   soulPurpose: string;
   spiritualGifts: string[];
@@ -55,12 +58,41 @@ export interface KabalisticInterpretation {
   guardianAngel: GuardianAngel;
 }
 
+export interface SpiritAnimalImage {
+  url: string;
+  photographer: {
+    name: string;
+    username: string;
+  };
+  unsplashUrl: string;
+}
+
 export interface SavedPortrait {
   id: string;
   createdAt: string;
-  birthData: BirthData;
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  birthPlace: string;
+  spiritAnimal: {
+    name: string;
+    description: string;
+    traits: string[];
+    image: SpiritAnimalImage;
+    symbolism: string[];
+    guidance: string;
+  };
+  numerology: {
+    lifePathNumber: number;
+    description: string;
+  };
+  chakras: {
+    dominant: string;
+    description: string;
+  };
+  advice: string;
   analysis: KabalisticInterpretation;
-  imageUrl?: string;
+  generatedImage?: string;
 }
 
 export interface PortraitHistoryHook {

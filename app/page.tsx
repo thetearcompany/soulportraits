@@ -8,6 +8,7 @@ import { SoulPortraitResult } from '@/app/components/SoulPortraitResult';
 import { SavedPortrait } from '@/types/portrait';
 import { birthDataSchema, type BirthData } from '@/lib/validations';
 import { ERROR_MESSAGES } from '@/lib/constants';
+import { RandomAnimalImage } from '@/app/components/RandomAnimalImage';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
@@ -87,15 +88,18 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-indigo-600 mb-4">
+          <h1 className="text-4xl font-bold text-primary mb-4">
             Twój Portret Duszy
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-muted-foreground mb-8">
             Odkryj swoją duchową esencję poprzez starożytną mądrość
           </p>
+          <div className="max-w-2xl mx-auto">
+            <RandomAnimalImage />
+          </div>
         </div>
 
         <div className="flex justify-center space-x-4 mb-8">
@@ -103,8 +107,8 @@ export default function Home() {
             onClick={() => setView('create')}
             className={`px-4 py-2 rounded-lg ${
               view === 'create'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-background text-muted-foreground hover:bg-secondary'
             }`}
           >
             Stwórz Portret
@@ -113,8 +117,8 @@ export default function Home() {
             onClick={() => setView('history')}
             className={`px-4 py-2 rounded-lg ${
               view === 'history'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-background text-muted-foreground hover:bg-secondary'
             }`}
           >
             Historia
@@ -122,88 +126,96 @@ export default function Home() {
         </div>
 
         {view === 'create' && !result && (
-          <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+          <div className="max-w-2xl mx-auto bg-card/30 p-6 rounded-lg shadow-lg">
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-800">{error}</p>
+              <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                <p className="text-destructive">{error}</p>
               </div>
             )}
             
             <form onSubmit={hookHandleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-2">
                     Imię
                   </label>
                   <input
                     type="text"
                     id="firstName"
                     {...register('firstName', { required: true })}
-                    className={`w-full p-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 ${
-                      fieldErrors.firstName ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full p-2 border rounded-lg bg-background transition-colors ${
+                      fieldErrors.firstName 
+                        ? 'border-destructive focus:border-destructive focus:ring-destructive/30' 
+                        : 'border-input focus:border-input focus:ring-ring/20'
                     }`}
                   />
                   {fieldErrors.firstName && (
-                    <p className="mt-1 text-sm text-red-600">{fieldErrors.firstName}</p>
+                    <p className="mt-1 text-sm text-destructive">{fieldErrors.firstName}</p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="lastName" className="block text-sm font-medium text-foreground mb-2">
                     Nazwisko
                   </label>
                   <input
                     type="text"
                     id="lastName"
                     {...register('lastName', { required: true })}
-                    className={`w-full p-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 ${
-                      fieldErrors.lastName ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full p-2 border rounded-lg bg-background transition-colors ${
+                      fieldErrors.lastName 
+                        ? 'border-destructive focus:border-destructive focus:ring-destructive/30' 
+                        : 'border-input focus:border-input focus:ring-ring/20'
                     }`}
                   />
                   {fieldErrors.lastName && (
-                    <p className="mt-1 text-sm text-red-600">{fieldErrors.lastName}</p>
+                    <p className="mt-1 text-sm text-destructive">{fieldErrors.lastName}</p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="birthDate" className="block text-sm font-medium text-foreground mb-2">
                     Data Urodzenia
                   </label>
                   <input
                     type="date"
                     id="birthDate"
                     {...register('birthDate', { required: true })}
-                    className={`w-full p-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 ${
-                      fieldErrors.birthDate ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full p-2 border rounded-lg bg-background transition-colors ${
+                      fieldErrors.birthDate 
+                        ? 'border-destructive focus:border-destructive focus:ring-destructive/30' 
+                        : 'border-input focus:border-input focus:ring-ring/20'
                     }`}
                   />
                   {fieldErrors.birthDate && (
-                    <p className="mt-1 text-sm text-red-600">{fieldErrors.birthDate}</p>
+                    <p className="mt-1 text-sm text-destructive">{fieldErrors.birthDate}</p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="birthPlace" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="birthPlace" className="block text-sm font-medium text-foreground mb-2">
                     Miejsce Urodzenia
                   </label>
                   <input
                     type="text"
                     id="birthPlace"
                     {...register('birthPlace', { required: true })}
-                    className={`w-full p-2 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 ${
-                      fieldErrors.birthPlace ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full p-2 border rounded-lg bg-background transition-colors ${
+                      fieldErrors.birthPlace 
+                        ? 'border-destructive focus:border-destructive focus:ring-destructive/30' 
+                        : 'border-input focus:border-input focus:ring-ring/20'
                     }`}
                     placeholder="np. Warszawa, Polska"
                   />
                   {fieldErrors.birthPlace && (
-                    <p className="mt-1 text-sm text-red-600">{fieldErrors.birthPlace}</p>
+                    <p className="mt-1 text-sm text-destructive">{fieldErrors.birthPlace}</p>
                   )}
                 </div>
               </div>
               <button
                 type="submit"
                 disabled={isLoading || !isValid || !isDirty}
-                className={`w-full py-3 px-6 rounded-lg text-white transition-colors duration-200 ${
+                className={`w-full py-3 px-6 rounded-lg text-primary-foreground transition-colors duration-200 ${
                   isLoading || !isValid || !isDirty
-                    ? 'bg-indigo-400 cursor-not-allowed'
-                    : 'bg-indigo-600 hover:bg-indigo-700'
+                    ? 'bg-primary/50 cursor-not-allowed'
+                    : 'bg-primary hover:bg-primary/90'
                 }`}
               >
                 {isLoading ? 'Trwa proces tworzenia portretu...' : 'Stwórz Portret Duszy'}
